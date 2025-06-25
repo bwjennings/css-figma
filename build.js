@@ -5,7 +5,7 @@ esbuild.buildSync({
   entryPoints: ['src/code.ts'],
   bundle: true,
   outfile: 'dist/code.js',
-  format: 'cjs',
+  format: 'iife',
   platform: 'browser',
   target: ['chrome58']
 });
