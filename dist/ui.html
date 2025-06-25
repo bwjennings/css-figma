@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: sans-serif; margin: 16px; }
+    textarea { width: 100%; height: 200px; }
+    button { margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h2>Paste CSS Variables</h2>
+  <textarea id="cssInput" placeholder="--primary: #ff0000;\n--spacing: 8px;"></textarea>
+  <br />
+  <button id="import">Import</button>
+  <script>
+    const textarea = document.getElementById('cssInput');
+    document.getElementById('import').onclick = () => {
+      const css = textarea.value;
+      parent.postMessage({ pluginMessage: { type: 'import-css', css } }, '*');
+    };
+  </script>
+</body>
+</html>
