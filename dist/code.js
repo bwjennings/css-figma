@@ -4424,7 +4424,7 @@
   var require_code = __commonJS({
     "src/code.ts"() {
       init_src();
-      figma.showUI(__html__, { themeColors: true,width: 360, height: 320 });
+      figma.showUI(__html__, { themeColors: true, width: 360, height: 320 });
       function toFigmaName(name) {
         const parts = name.split("-");
         if (parts.length > 1) {
