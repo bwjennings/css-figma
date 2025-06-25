@@ -824,8 +824,8 @@ var convertRgbToLrgb = ({ r, g, b, alpha }) => {
 var convertRgbToLrgb_default = convertRgbToLrgb;
 
 // node_modules/culori/src/xyz65/convertRgbToXyz65.js
-var convertRgbToXyz65 = (rgb2) => {
-  let { r, g, b, alpha } = convertRgbToLrgb_default(rgb2);
+var convertRgbToXyz65 = (rgb3) => {
+  let { r, g, b, alpha } = convertRgbToLrgb_default(rgb3);
   let res = {
     mode: "xyz65",
     x: 0.4123907992659593 * r + 0.357584339383878 * g + 0.1804807884018343 * b,
@@ -1140,9 +1140,9 @@ var convertXyz65ToLab65 = ({ x, y, z, alpha }) => {
 var convertXyz65ToLab65_default = convertXyz65ToLab65;
 
 // node_modules/culori/src/lab65/convertRgbToLab65.js
-var convertRgbToLab65 = (rgb2) => {
-  let res = convertXyz65ToLab65_default(convertRgbToXyz65_default(rgb2));
-  if (rgb2.r === rgb2.b && rgb2.b === rgb2.g) {
+var convertRgbToLab65 = (rgb3) => {
+  let res = convertXyz65ToLab65_default(convertRgbToXyz65_default(rgb3));
+  if (rgb3.r === rgb3.b && rgb3.b === rgb3.g) {
     res.a = res.b = 0;
   }
   return res;
@@ -1901,9 +1901,9 @@ var convertJabToXyz65 = ({ j, a, b, alpha }) => {
 var convertJabToXyz65_default = convertJabToXyz65;
 
 // node_modules/culori/src/jab/convertRgbToJab.js
-var convertRgbToJab = (rgb2) => {
-  let res = convertXyz65ToJab_default(convertRgbToXyz65_default(rgb2));
-  if (rgb2.r === rgb2.b && rgb2.b === rgb2.g) {
+var convertRgbToJab = (rgb3) => {
+  let res = convertXyz65ToJab_default(convertRgbToXyz65_default(rgb3));
+  if (rgb3.r === rgb3.b && rgb3.b === rgb3.g) {
     res.a = res.b = 0;
   }
   return res;
@@ -2058,8 +2058,8 @@ var convertLabToRgb = (lab2) => convertXyz50ToRgb_default(convertLabToXyz50_defa
 var convertLabToRgb_default = convertLabToRgb;
 
 // node_modules/culori/src/xyz50/convertRgbToXyz50.js
-var convertRgbToXyz50 = (rgb2) => {
-  let { r, g, b, alpha } = convertRgbToLrgb_default(rgb2);
+var convertRgbToXyz50 = (rgb3) => {
+  let { r, g, b, alpha } = convertRgbToLrgb_default(rgb3);
   let res = {
     mode: "xyz50",
     x: 0.436065742824811 * r + 0.3851514688337912 * g + 0.14307845442264197 * b,
@@ -2096,9 +2096,9 @@ var convertXyz50ToLab = ({ x, y, z, alpha }) => {
 var convertXyz50ToLab_default = convertXyz50ToLab;
 
 // node_modules/culori/src/lab/convertRgbToLab.js
-var convertRgbToLab = (rgb2) => {
-  let res = convertXyz50ToLab_default(convertRgbToXyz50_default(rgb2));
-  if (rgb2.r === rgb2.b && rgb2.b === rgb2.g) {
+var convertRgbToLab = (rgb3) => {
+  let res = convertXyz50ToLab_default(convertRgbToXyz50_default(rgb3));
+  if (rgb3.r === rgb3.b && rgb3.b === rgb3.g) {
     res.a = res.b = 0;
   }
   return res;
@@ -2373,7 +2373,7 @@ var convertLuvToXyz50 = ({ l, u, v, alpha }) => {
 var convertLuvToXyz50_default = convertLuvToXyz50;
 
 // node_modules/culori/src/lchuv/definition.js
-var convertRgbToLchuv = (rgb2) => convertLuvToLchuv_default(convertXyz50ToLuv_default(convertRgbToXyz50_default(rgb2)));
+var convertRgbToLchuv = (rgb3) => convertLuvToLchuv_default(convertXyz50ToLuv_default(convertRgbToXyz50_default(rgb3)));
 var convertLchuvToRgb = (lchuv2) => convertXyz50ToRgb_default(convertLuvToXyz50_default(convertLchuvToLuv_default(lchuv2)));
 var definition17 = {
   mode: "lchuv",
@@ -2431,7 +2431,7 @@ var definition19 = {
   },
   fromMode: {
     xyz50: convertXyz50ToLuv_default,
-    rgb: (rgb2) => convertXyz50ToLuv_default(convertRgbToXyz50_default(rgb2))
+    rgb: (rgb3) => convertXyz50ToLuv_default(convertRgbToXyz50_default(rgb3))
   },
   channels: ["l", "u", "v", "alpha"],
   parse: ["--luv"],
@@ -2478,9 +2478,9 @@ var convertLrgbToOklab = ({ r, g, b, alpha }) => {
 var convertLrgbToOklab_default = convertLrgbToOklab;
 
 // node_modules/culori/src/oklab/convertRgbToOklab.js
-var convertRgbToOklab = (rgb2) => {
-  let res = convertLrgbToOklab_default(convertRgbToLrgb_default(rgb2));
-  if (rgb2.r === rgb2.b && rgb2.b === rgb2.g) {
+var convertRgbToOklab = (rgb3) => {
+  let res = convertLrgbToOklab_default(convertRgbToLrgb_default(rgb3));
+  if (rgb3.r === rgb3.b && rgb3.b === rgb3.g) {
     res.a = res.b = 0;
   }
   return res;
@@ -2590,8 +2590,8 @@ function compute_max_saturation(a, b) {
 }
 function find_cusp(a, b) {
   let S_cusp = compute_max_saturation(a, b);
-  let rgb2 = convertOklabToLrgb_default({ l: 1, a: S_cusp * a, b: S_cusp * b });
-  let L_cusp = Math.cbrt(1 / Math.max(rgb2.r, rgb2.g, rgb2.b));
+  let rgb3 = convertOklabToLrgb_default({ l: 1, a: S_cusp * a, b: S_cusp * b });
+  let L_cusp = Math.cbrt(1 / Math.max(rgb3.r, rgb3.g, rgb3.b));
   let C_cusp = L_cusp * S_cusp;
   return [L_cusp, C_cusp];
 }
@@ -2974,8 +2974,8 @@ var definition21 = __spreadProps(__spreadValues({}, definition_default15), {
 var definition_default21 = definition21;
 
 // node_modules/culori/src/p3/convertP3ToXyz65.js
-var convertP3ToXyz65 = (rgb2) => {
-  let { r, g, b, alpha } = convertRgbToLrgb_default(rgb2);
+var convertP3ToXyz65 = (rgb3) => {
+  let { r, g, b, alpha } = convertRgbToLrgb_default(rgb3);
   let res = {
     mode: "xyz65",
     x: 0.486570948648216 * r + 0.265667693169093 * g + 0.1982172852343625 * b,
@@ -3392,6 +3392,34 @@ var definition28 = {
 };
 var definition_default28 = definition28;
 
+// node_modules/culori/src/clamp.js
+var rgb = converter_default("rgb");
+var fixup_rgb = (c2) => {
+  const res = {
+    mode: c2.mode,
+    r: Math.max(0, Math.min(c2.r !== void 0 ? c2.r : 0, 1)),
+    g: Math.max(0, Math.min(c2.g !== void 0 ? c2.g : 0, 1)),
+    b: Math.max(0, Math.min(c2.b !== void 0 ? c2.b : 0, 1))
+  };
+  if (c2.alpha !== void 0) {
+    res.alpha = c2.alpha;
+  }
+  return res;
+};
+var to_displayable_srgb = (c2) => fixup_rgb(rgb(c2));
+var inrange_rgb = (c2) => {
+  return c2 !== void 0 && (c2.r === void 0 || c2.r >= 0 && c2.r <= 1) && (c2.g === void 0 || c2.g >= 0 && c2.g <= 1) && (c2.b === void 0 || c2.b >= 0 && c2.b <= 1);
+};
+function displayable(color) {
+  return inrange_rgb(rgb(color));
+}
+function clampRgb(color) {
+  color = prepare_default(color);
+  if (color === void 0 || displayable(color)) return color;
+  let conv = converter_default(color.mode);
+  return conv(to_displayable_srgb(color));
+}
+
 // node_modules/culori/src/index.js
 var a98 = useMode(definition_default2);
 var cubehelix = useMode(definition_default3);
@@ -3418,7 +3446,7 @@ var oklch = useMode(definition_default21);
 var p3 = useMode(definition_default22);
 var prophoto = useMode(definition_default23);
 var rec2020 = useMode(definition_default24);
-var rgb = useMode(definition_default);
+var rgb2 = useMode(definition_default);
 var xyb = useMode(definition_default25);
 var xyz50 = useMode(definition_default26);
 var xyz65 = useMode(definition_default27);
@@ -3438,10 +3466,10 @@ function parseCssVariables(css) {
     const valueStr = m[2].trim();
     const color = parse_default(valueStr);
     if (color) {
-      const rgb2 = toRGB(color);
+      const rgb3 = clampRgb(toRGB(color));
       result[name] = {
         type: "COLOR",
-        value: { r: rgb2.r, g: rgb2.g, b: rgb2.b, a: (_a = rgb2.alpha) != null ? _a : 1 }
+        value: { r: rgb3.r, g: rgb3.g, b: rgb3.b, a: (_a = rgb3.alpha) != null ? _a : 1 }
       };
       continue;
     }

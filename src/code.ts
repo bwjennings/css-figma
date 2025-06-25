@@ -1,4 +1,4 @@
-import { parse, converter } from 'culori';
+import { parse, converter, clampRgb } from 'culori';
 
 figma.showUI(__html__, { width: 360, height: 320 });
 
@@ -15,7 +15,7 @@ function parseCssVariables(css: string): Record<string, {type: 'COLOR' | 'FLOAT'
     const valueStr = m[2].trim();
     const color = parse(valueStr);
     if (color) {
-      const rgb = toRGB(color);
+      const rgb = clampRgb(toRGB(color));
       result[name] = {
         type: 'COLOR',
         value: { r: rgb.r, g: rgb.g, b: rgb.b, a: rgb.alpha ?? 1 }
