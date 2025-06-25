@@ -5,6 +5,15 @@ figma.showUI(__html__, { width: 360, height: 320 });
 // Helper to parse CSS variable definitions
 type ParsedVar = { type: 'COLOR' | 'FLOAT' | 'ALIAS'; value: any };
 
+function toFigmaName(name: string): string {
+  const parts = name.split('-');
+  if (parts.length > 1) {
+    const last = parts.pop()!;
+    return parts.join('/') + '/' + last;
+  }
+  return name;
+}
+
 function parseCssVariables(css: string): Record<string, ParsedVar> {
   const result: Record<string, ParsedVar> = {};
   // remove comments and surrounding selectors
@@ -48,22 +57,32 @@ figma.ui.onmessage = async (msg) => {
     }
     const modeId = collection.modes[0].modeId;
     const allVars = await figma.variables.getLocalVariablesAsync();
-    const nameMap = new Map(allVars.map(v => [v.name, v]));
+    const nameMap = new Map<string, Variable>();
+    for (const v of allVars) {
+      nameMap.set(v.name, v);
+      const css = v.codeSyntax?.WEB;
+      const match = css?.match(/^var\(--([a-zA-Z0-9\-_]+)\)$/);
+      if (match) {
+        nameMap.set(match[1], v);
+      }
+    }
 
     const created: Record<string, Variable> = {};
 
     // First, handle non-alias variables
-    for (const [name, data] of Object.entries(vars)) {
+    for (const [cssName, data] of Object.entries(vars)) {
       if (data.type === 'ALIAS') continue;
+      const figmaName = toFigmaName(cssName);
       let variable = collection!.variableIds
         .map(id => figma.variables.getVariableById(id)!)
-        .find(v => v.name === name);
+        .find(v => v.name === figmaName);
       if (!variable) {
-        variable = figma.variables.createVariable(name, collection!.id, data.type);
+        variable = figma.variables.createVariable(figmaName, collection!.id, data.type);
       }
       variable.setValueForMode(modeId, data.value);
-      created[name] = variable;
-      nameMap.set(name, variable);
+      variable.setVariableCodeSyntax('WEB', `var(--${cssName})`);
+      created[cssName] = variable;
+      nameMap.set(cssName, variable);
     }
 
     // Resolve alias variables
@@ -71,21 +90,23 @@ figma.ui.onmessage = async (msg) => {
     let generations = aliasEntries.length;
     while (aliasEntries.length && generations > 0) {
       const remaining: typeof aliasEntries = [];
-      for (const [name, data] of aliasEntries) {
+      for (const [cssName, data] of aliasEntries) {
         const target = nameMap.get(data.value);
         if (target) {
+          const figmaName = toFigmaName(cssName);
           let variable = collection!.variableIds
             .map(id => figma.variables.getVariableById(id)!)
-            .find(v => v.name === name);
+            .find(v => v.name === figmaName);
           if (!variable) {
-            variable = figma.variables.createVariable(name, collection!.id, target.resolvedType);
+            variable = figma.variables.createVariable(figmaName, collection!.id, target.resolvedType);
           }
           const alias = figma.variables.createVariableAlias(target);
           variable.setValueForMode(modeId, alias);
-          created[name] = variable;
-          nameMap.set(name, variable);
+          variable.setVariableCodeSyntax('WEB', `var(--${cssName})`);
+          created[cssName] = variable;
+          nameMap.set(cssName, variable);
         } else {
-          remaining.push([name, data]);
+          remaining.push([cssName, data]);
         }
       }
       aliasEntries = remaining;
