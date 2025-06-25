@@ -3,8 +3,10 @@ import { parse, converter, clampRgb } from 'culori';
 figma.showUI(__html__, { width: 360, height: 320 });
 
 // Helper to parse CSS variable definitions
-function parseCssVariables(css: string): Record<string, {type: 'COLOR' | 'FLOAT', value: any}> {
-  const result: Record<string, {type: 'COLOR' | 'FLOAT', value: any}> = {};
+type ParsedVar = { type: 'COLOR' | 'FLOAT' | 'ALIAS'; value: any };
+
+function parseCssVariables(css: string): Record<string, ParsedVar> {
+  const result: Record<string, ParsedVar> = {};
   // remove comments and surrounding selectors
   css = css.replace(/\/\*[\s\S]*?\*\//g, '');
   const re = /--([a-zA-Z0-9\-_]+)\s*:\s*([^;]+);/g;
@@ -13,6 +15,12 @@ function parseCssVariables(css: string): Record<string, {type: 'COLOR' | 'FLOAT'
   while ((m = re.exec(css)) !== null) {
     const name = m[1];
     const valueStr = m[2].trim();
+    const aliasMatch = valueStr.match(/^var\(--([a-zA-Z0-9\-_]+)\)$/);
+    if (aliasMatch) {
+      result[name] = { type: 'ALIAS', value: aliasMatch[1] };
+      continue;
+    }
+
     const color = parse(valueStr);
     if (color) {
       const rgb = clampRgb(toRGB(color));
@@ -39,20 +47,52 @@ figma.ui.onmessage = async (msg) => {
       collection = figma.variables.createVariableCollection(collectionName);
     }
     const modeId = collection.modes[0].modeId;
+    const allVars = await figma.variables.getLocalVariablesAsync();
+    const nameMap = new Map(allVars.map(v => [v.name, v]));
+
+    const created: Record<string, Variable> = {};
+
+    // First, handle non-alias variables
     for (const [name, data] of Object.entries(vars)) {
+      if (data.type === 'ALIAS') continue;
       let variable = collection!.variableIds
         .map(id => figma.variables.getVariableById(id)!)
         .find(v => v.name === name);
       if (!variable) {
         variable = figma.variables.createVariable(name, collection!.id, data.type);
       }
-      if (data.type === 'COLOR') {
-        variable.setValueForMode(modeId, data.value);
-      } else {
-        variable.setValueForMode(modeId, data.value);
-      }
+      variable.setValueForMode(modeId, data.value);
+      created[name] = variable;
+      nameMap.set(name, variable);
     }
-    figma.notify(`Imported ${Object.keys(vars).length} variables`);
+
+    // Resolve alias variables
+    let aliasEntries = Object.entries(vars).filter(([, d]) => d.type === 'ALIAS') as [string, ParsedVar][];
+    let generations = aliasEntries.length;
+    while (aliasEntries.length && generations > 0) {
+      const remaining: typeof aliasEntries = [];
+      for (const [name, data] of aliasEntries) {
+        const target = nameMap.get(data.value);
+        if (target) {
+          let variable = collection!.variableIds
+            .map(id => figma.variables.getVariableById(id)!)
+            .find(v => v.name === name);
+          if (!variable) {
+            variable = figma.variables.createVariable(name, collection!.id, target.resolvedType);
+          }
+          const alias = figma.variables.createVariableAlias(target);
+          variable.setValueForMode(modeId, alias);
+          created[name] = variable;
+          nameMap.set(name, variable);
+        } else {
+          remaining.push([name, data]);
+        }
+      }
+      aliasEntries = remaining;
+      generations--;
+    }
+
+    figma.notify(`Imported ${Object.keys(vars).length - aliasEntries.length} variables`);
     figma.closePlugin();
   }
 };
