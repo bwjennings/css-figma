@@ -130,6 +130,17 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
 }
 
 figma.ui.onmessage = async (msg) => {
+  if (msg.type === 'preview-css') {
+    const vars = parseCssVariables(msg.css as string);
+    const preview = Object.entries(vars).map(([name, data]) => ({
+      name,
+      type: data.type,
+      value: data.value,
+      scopes: detectVariableScopes(name)
+    }));
+    figma.ui.postMessage({ type: 'preview-data', preview });
+    return;
+  }
   if (msg.type === 'import-css') {
     const vars = parseCssVariables(msg.css as string);
     const collectionName = msg.collectionName as string;
