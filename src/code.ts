@@ -51,11 +51,63 @@ const SCOPE_KEYWORDS: Record<VariableScope, string[]> = {
   PARAGRAPH_INDENT: ['PARAGRAPH_INDENT', 'INDENTATION']
 };
 
+const SCOPE_LABELS: Record<VariableScope, string> = {
+  TEXT_CONTENT: 'Text content',
+  CORNER_RADIUS: 'Corner radius',
+  WIDTH_HEIGHT: 'Width & height',
+  GAP: 'Gap',
+  ALL_FILLS: 'Fill',
+  FRAME_FILL: 'Frame fill',
+  SHAPE_FILL: 'Shape fill',
+  TEXT_FILL: 'Text fill',
+  STROKE_COLOR: 'Stroke color',
+  STROKE_FLOAT: 'Stroke width',
+  EFFECT_FLOAT: 'Effect amount',
+  EFFECT_COLOR: 'Effect color',
+  OPACITY: 'Opacity',
+  FONT_FAMILY: 'Font family',
+  FONT_STYLE: 'Font style',
+  FONT_WEIGHT: 'Font weight',
+  FONT_SIZE: 'Font size',
+  LINE_HEIGHT: 'Line height',
+  LETTER_SPACING: 'Letter spacing',
+  PARAGRAPH_SPACING: 'Paragraph spacing',
+  PARAGRAPH_INDENT: 'Paragraph indent'
+};
+
+const SCOPE_TYPES: Record<VariableScope, 'COLOR' | 'FLOAT' | 'ANY'> = {
+  TEXT_CONTENT: 'ANY',
+  CORNER_RADIUS: 'FLOAT',
+  WIDTH_HEIGHT: 'FLOAT',
+  GAP: 'FLOAT',
+  ALL_FILLS: 'COLOR',
+  FRAME_FILL: 'COLOR',
+  SHAPE_FILL: 'COLOR',
+  TEXT_FILL: 'COLOR',
+  STROKE_COLOR: 'COLOR',
+  STROKE_FLOAT: 'FLOAT',
+  EFFECT_FLOAT: 'FLOAT',
+  EFFECT_COLOR: 'COLOR',
+  OPACITY: 'FLOAT',
+  FONT_FAMILY: 'ANY',
+  FONT_STYLE: 'ANY',
+  FONT_WEIGHT: 'FLOAT',
+  FONT_SIZE: 'FLOAT',
+  LINE_HEIGHT: 'FLOAT',
+  LETTER_SPACING: 'FLOAT',
+  PARAGRAPH_SPACING: 'FLOAT',
+  PARAGRAPH_INDENT: 'FLOAT'
+};
+
 figma.showUI(__html__, { themeColors: true, width: 400, height: 480 });
 figma.ui.postMessage({
   type: 'init',
   collections: figma.variables.getLocalVariableCollections().map(c => c.name),
-  scopes: VARIABLE_SCOPES
+  scopes: VARIABLE_SCOPES.map(s => ({
+    code: s,
+    label: SCOPE_LABELS[s],
+    type: SCOPE_TYPES[s]
+  }))
 });
 
 function detectVariableScopes(name: string): VariableScope[] {
@@ -151,8 +203,8 @@ figma.ui.onmessage = async (msg) => {
   if (msg.type === 'import-css') {
     const vars = parseCssVariables(msg.css as string);
     const collectionName = msg.collectionName as string;
-    const itemScopes = msg.itemScopes as Record<string, VariableScope | undefined> | undefined;
-    const groupScopes = msg.groupScopes as Record<string, VariableScope | undefined> | undefined;
+    const itemScopes = msg.itemScopes as Record<string, VariableScope[] | undefined> | undefined;
+    const groupScopes = msg.groupScopes as Record<string, VariableScope[] | undefined> | undefined;
     let collection = figma.variables.getLocalVariableCollections().find(c => c.name === collectionName);
     if (!collection) {
       collection = figma.variables.createVariableCollection(collectionName);
@@ -160,12 +212,12 @@ figma.ui.onmessage = async (msg) => {
     const modeId = collection.modes[0].modeId;
 
     const getScopesForName = (name: string): VariableScope[] => {
-      if (itemScopes && itemScopes[name]) {
-        return [itemScopes[name]!];
+      if (itemScopes && itemScopes[name] && itemScopes[name]!.length) {
+        return itemScopes[name]!;
       }
       const group = getGroup(name);
-      if (groupScopes && groupScopes[group]) {
-        return [groupScopes[group]!];
+      if (groupScopes && groupScopes[group] && groupScopes[group]!.length) {
+        return groupScopes[group]!;
       }
       return detectVariableScopes(name);
     };

@@ -150,6 +150,9 @@
     const select = document.getElementById('collectionSelect');
     const newInput = document.getElementById('newCollection');
     const previewDiv = document.getElementById('preview');
+    /**
+     * scopes: Array of { code: string, label: string, type: 'COLOR' | 'FLOAT' | 'ANY' }
+     */
     let scopes = [];
     const itemScopeOverrides = {};
     const groupScopeOverrides = {};
@@ -189,20 +192,41 @@
       updateButtonState();
     });
 
-    function renderScopeSelect(current) {
+    function renderScopeSelect(type, current) {
       const sel = document.createElement('select');
       sel.className = 'scope-select';
+      sel.multiple = true;
+      sel.size = 4;
+
       const none = document.createElement('option');
-      none.value = '';
+      none.value = '__AUTO__';
       none.textContent = 'Auto';
       sel.appendChild(none);
-      for (const s of scopes) {
+
+      const opts = scopes.filter(s => !type || s.type === type || s.type === 'ANY');
+      for (const s of opts) {
         const opt = document.createElement('option');
-        opt.value = s;
-        opt.textContent = s;
+        opt.value = s.code;
+        opt.textContent = s.label;
         sel.appendChild(opt);
       }
-      sel.value = current || '';
+
+      if (current && current.length) {
+        for (const opt of sel.options) {
+          if (current.includes(opt.value)) opt.selected = true;
+        }
+      } else {
+        none.selected = true;
+      }
+
+      sel.addEventListener('change', () => {
+        if (sel.selectedOptions.length === 0 || sel.value === '__AUTO__') {
+          sel.value = '__AUTO__';
+        } else {
+          none.selected = false;
+        }
+      });
+
       return sel;
     }
 
@@ -218,9 +242,10 @@
         const groupDiv = document.createElement('div');
         groupDiv.className = 'preview-group';
         groupDiv.textContent = groupName || '(root)';
-        const groupSel = renderScopeSelect(groupScopeOverrides[groupName]);
+        const groupSel = renderScopeSelect(null, groupScopeOverrides[groupName]);
         groupSel.onchange = () => {
-          if (groupSel.value) groupScopeOverrides[groupName] = groupSel.value; else delete groupScopeOverrides[groupName];
+          const values = Array.from(groupSel.selectedOptions).map(o => o.value).filter(v => v !== '__AUTO__');
+          if (values.length) groupScopeOverrides[groupName] = values; else delete groupScopeOverrides[groupName];
         };
         groupDiv.appendChild(groupSel);
         previewDiv.appendChild(groupDiv);
@@ -244,9 +269,10 @@
           scopesDiv.className = 'preview-scopes';
           scopesDiv.textContent = item.scopes.join(', ');
           div.appendChild(scopesDiv);
-          const scopeSel = renderScopeSelect(itemScopeOverrides[item.name]);
+          const scopeSel = renderScopeSelect(item.type, itemScopeOverrides[item.name]);
           scopeSel.onchange = () => {
-            if (scopeSel.value) itemScopeOverrides[item.name] = scopeSel.value; else delete itemScopeOverrides[item.name];
+            const values = Array.from(scopeSel.selectedOptions).map(o => o.value).filter(v => v !== '__AUTO__');
+            if (values.length) itemScopeOverrides[item.name] = values; else delete itemScopeOverrides[item.name];
           };
           div.appendChild(scopeSel);
           previewDiv.appendChild(div);
