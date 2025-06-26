@@ -33,9 +33,44 @@ const VARIABLE_SCOPES: VariableScope[] = [
   'PARAGRAPH_INDENT'
 ];
 
+const SCOPE_KEYWORDS: Record<VariableScope, string[]> = {
+  TEXT_CONTENT: ['TEXT', 'CONTENT', 'STRING'],
+  CORNER_RADIUS: ['RADIUS', 'BORDER_RADIUS', 'ROUNDNESS'],
+  WIDTH_HEIGHT: ['WIDTH', 'HEIGHT', 'DIMENSION'],
+  GAP: ['GAP', 'SPACING', 'SPACE'],
+  ALL_FILLS: ['FILL', 'BACKGROUND'],
+  FRAME_FILL: ['FRAME_FILL'],
+  SHAPE_FILL: ['SHAPE_FILL'],
+  TEXT_FILL: ['TEXT_FILL', 'FONT_COLOR'],
+  STROKE_COLOR: ['STROKE_COLOR', 'BORDER_COLOR'],
+  STROKE_FLOAT: ['STROKE_WIDTH', 'BORDER_WIDTH'],
+  EFFECT_FLOAT: ['BLUR', 'SHADOW_SPREAD', 'EFFECT_SIZE'],
+  EFFECT_COLOR: ['SHADOW_COLOR', 'GLOW_COLOR'],
+  OPACITY: ['OPACITY', 'ALPHA', 'TRANSPARENCY'],
+  FONT_FAMILY: ['FONT', 'TYPEFACE', 'FONT_FAMILY'],
+  FONT_STYLE: ['STYLE', 'FONT_STYLE'],
+  FONT_WEIGHT: ['FONT_WEIGHT', 'WEIGHT'],
+  FONT_SIZE: ['FONT_SIZE', 'TEXT_SIZE'],
+  LINE_HEIGHT: ['LINE_HEIGHT', 'LEADING'],
+  LETTER_SPACING: ['LETTER_SPACING', 'TRACKING'],
+  PARAGRAPH_SPACING: ['PARAGRAPH_SPACING', 'PARAGRAPH_GAP'],
+  PARAGRAPH_INDENT: ['PARAGRAPH_INDENT', 'INDENTATION']
+};
+
 function detectVariableScopes(name: string): VariableScope[] {
   const normalized = name.replace(/[^a-zA-Z0-9]+/g, '_').toUpperCase();
-  return VARIABLE_SCOPES.filter(scope => normalized.includes(scope));
+  const scopes = VARIABLE_SCOPES.filter(scope => normalized.includes(scope));
+  for (const [scope, keywords] of Object.entries(SCOPE_KEYWORDS)) {
+    const s = scope as VariableScope;
+    if (scopes.includes(s)) continue;
+    for (const kw of keywords) {
+      if (normalized.includes(kw.replace(/[^A-Z0-9]+/g, '_').toUpperCase())) {
+        scopes.push(s);
+        break;
+      }
+    }
+  }
+  return scopes;
 }
 
 function toFigmaName(name: string): string {
