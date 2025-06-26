@@ -4424,7 +4424,11 @@
   var require_code = __commonJS({
     "src/code.ts"() {
       init_src();
-      figma.showUI(__html__, { themeColors: true, width: 360, height: 320 });
+      figma.showUI(__html__, { themeColors: true, width: 360, height: 360 });
+      figma.ui.postMessage({
+        type: "collections",
+        collections: figma.variables.getLocalVariableCollections().map((c2) => c2.name)
+      });
       function toFigmaName(name) {
         const parts = name.split("-");
         if (parts.length > 1) {
@@ -4468,7 +4472,7 @@
         var _a;
         if (msg.type === "import-css") {
           const vars = parseCssVariables(msg.css);
-          const collectionName = "CSS Variables";
+          const collectionName = msg.collectionName;
           let collection = figma.variables.getLocalVariableCollections().find((c2) => c2.name === collectionName);
           if (!collection) {
             collection = figma.variables.createVariableCollection(collectionName);
@@ -4485,12 +4489,17 @@
             }
           }
           const created = {};
+          let added = 0;
+          let updated = 0;
           for (const [cssName, data] of Object.entries(vars)) {
             if (data.type === "ALIAS") continue;
             const figmaName = toFigmaName(cssName);
             let variable = collection.variableIds.map((id) => figma.variables.getVariableById(id)).find((v) => v.name === figmaName);
             if (!variable) {
               variable = figma.variables.createVariable(figmaName, collection.id, data.type);
+              added++;
+            } else {
+              updated++;
             }
             variable.setValueForMode(modeId, data.value);
             variable.setVariableCodeSyntax("WEB", `var(--${cssName})`);
@@ -4508,6 +4517,9 @@
                 let variable = collection.variableIds.map((id) => figma.variables.getVariableById(id)).find((v) => v.name === figmaName);
                 if (!variable) {
                   variable = figma.variables.createVariable(figmaName, collection.id, target.resolvedType);
+                  added++;
+                } else {
+                  updated++;
                 }
                 const alias = figma.variables.createVariableAlias(target);
                 variable.setValueForMode(modeId, alias);
@@ -4521,7 +4533,15 @@
             aliasEntries = remaining;
             generations--;
           }
-          figma.notify(`Imported ${Object.keys(vars).length - aliasEntries.length} variables`);
+          let message = "";
+          if (added && updated) {
+            message = `Added ${added} and updated ${updated} variables in ${collection.name}`;
+          } else if (added) {
+            message = `Added ${added} variables to ${collection.name}`;
+          } else {
+            message = `Updated ${updated} variables in ${collection.name}`;
+          }
+          figma.notify(message);
           figma.closePlugin();
         }
       };

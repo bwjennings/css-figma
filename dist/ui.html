@@ -38,6 +38,16 @@
       padding: 4px;
     }
 
+    select, input[type="text"] {
+      width: 100%;
+      background: var(--color-bg-secondary);
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      padding: 4px;
+      margin-top: 4px;
+    }
+
     textarea:focus-visible {
       outline: none;
       border-color: var(--color-border-focus);
@@ -81,21 +91,61 @@
   <h2>Paste CSS Variables</h2>
   <textarea id="cssInput" placeholder="--primary: #ff0000;\n--spacing: 8px;"></textarea>
   <br />
+  <label for="collectionSelect">Collection:</label>
+  <select id="collectionSelect"></select>
+  <input id="newCollection" type="text" placeholder="New collection name" style="display:none; width: 100%; margin-top: 4px;" />
+  <br />
   <button id="import">Import</button>
   <script>
     const textarea = document.getElementById('cssInput');
     const importBtn = document.getElementById('import');
+    const select = document.getElementById('collectionSelect');
+    const newInput = document.getElementById('newCollection');
 
     function updateButtonState() {
-      importBtn.disabled = textarea.value.trim().length === 0;
+      let disabled = textarea.value.trim().length === 0;
+      if (!disabled && select.value === '__new__') {
+        disabled = newInput.value.trim().length === 0;
+      }
+      importBtn.disabled = disabled;
     }
 
     textarea.addEventListener('input', updateButtonState);
+    newInput.addEventListener('input', updateButtonState);
+    select.addEventListener('change', () => {
+      newInput.style.display = select.value === '__new__' ? 'block' : 'none';
+      updateButtonState();
+    });
+
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (msg.type === 'collections') {
+        select.innerHTML = '';
+        for (const name of msg.collections) {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          select.appendChild(opt);
+        }
+        const newOpt = document.createElement('option');
+        newOpt.value = '__new__';
+        newOpt.textContent = 'New collection...';
+        select.appendChild(newOpt);
+        updateButtonState();
+      }
+    };
+
     updateButtonState();
 
     importBtn.onclick = () => {
       const css = textarea.value;
-      parent.postMessage({ pluginMessage: { type: 'import-css', css } }, '*');
+      let collectionName = select.value;
+      let create = false;
+      if (collectionName === '__new__') {
+        collectionName = newInput.value.trim();
+        create = true;
+      }
+      parent.postMessage({ pluginMessage: { type: 'import-css', css, collectionName, create } }, '*');
     };
   </script>
 </body>
