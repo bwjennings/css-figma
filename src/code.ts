@@ -41,6 +41,17 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
       continue;
     }
 
+    const unitMatch = valueStr.match(/^(-?\d*\.?\d+)([a-zA-Z%]+)$/);
+    if (unitMatch) {
+      let num = parseFloat(unitMatch[1]);
+      const unit = unitMatch[2].toLowerCase();
+      if (unit === 'rem') {
+        num *= 16;
+      }
+      result[name] = { type: 'FLOAT', value: num };
+      continue;
+    }
+
     const color = parse(valueStr);
     if (color) {
       const rgb = clampRgb(toRGB(color));

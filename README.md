@@ -1,6 +1,6 @@
 # CSS Variables Importer Figma Plugin
 
-This plugin allows you to paste CSS variable definitions and automatically create Figma variables in your file. Both color values (including all CSS color functions) and numeric values are supported.
+This plugin allows you to paste CSS variable definitions and automatically create Figma variables in your file. Both color values (including all CSS color functions) and numeric values are supported. Values with units are imported as numbers, with `rem` values converted to pixels (16px per `1rem`).
 
 ## Development
 
