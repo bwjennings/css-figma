@@ -151,6 +151,51 @@
     const newInput = document.getElementById('newCollection');
     const previewDiv = document.getElementById('preview');
     let scopes = [];
+    const scopeLabels = {
+      TEXT_CONTENT: 'Text content',
+      CORNER_RADIUS: 'Corner radius',
+      WIDTH_HEIGHT: 'Width & height',
+      GAP: 'Gap',
+      ALL_FILLS: 'All fills',
+      FRAME_FILL: 'Frame fill',
+      SHAPE_FILL: 'Shape fill',
+      TEXT_FILL: 'Text fill',
+      STROKE_COLOR: 'Stroke color',
+      STROKE_FLOAT: 'Stroke width',
+      EFFECT_FLOAT: 'Effect size',
+      EFFECT_COLOR: 'Effect color',
+      OPACITY: 'Opacity',
+      FONT_FAMILY: 'Font family',
+      FONT_STYLE: 'Font style',
+      FONT_WEIGHT: 'Font weight',
+      FONT_SIZE: 'Font size',
+      LINE_HEIGHT: 'Line height',
+      LETTER_SPACING: 'Letter spacing',
+      PARAGRAPH_SPACING: 'Paragraph spacing',
+      PARAGRAPH_INDENT: 'Paragraph indent'
+    };
+    const colorScopes = [
+      'ALL_FILLS',
+      'FRAME_FILL',
+      'SHAPE_FILL',
+      'TEXT_FILL',
+      'STROKE_COLOR',
+      'EFFECT_COLOR'
+    ];
+    const numberScopes = [
+      'CORNER_RADIUS',
+      'WIDTH_HEIGHT',
+      'GAP',
+      'STROKE_FLOAT',
+      'EFFECT_FLOAT',
+      'OPACITY',
+      'FONT_WEIGHT',
+      'FONT_SIZE',
+      'LINE_HEIGHT',
+      'LETTER_SPACING',
+      'PARAGRAPH_SPACING',
+      'PARAGRAPH_INDENT'
+    ];
     const itemScopeOverrides = {};
     const groupScopeOverrides = {};
 
@@ -189,20 +234,23 @@
       updateButtonState();
     });
 
-    function renderScopeSelect(current) {
+    function renderScopeSelect(current, allowed) {
       const sel = document.createElement('select');
       sel.className = 'scope-select';
+      sel.multiple = true;
+      sel.size = Math.min(4, allowed.length + 1);
       const none = document.createElement('option');
       none.value = '';
       none.textContent = 'Auto';
       sel.appendChild(none);
-      for (const s of scopes) {
+      for (const s of allowed) {
         const opt = document.createElement('option');
         opt.value = s;
-        opt.textContent = s;
+        opt.textContent = scopeLabels[s] || s;
+        if (current && current.includes(s)) opt.selected = true;
         sel.appendChild(opt);
       }
-      sel.value = current || '';
+      if (!current || current.length === 0) none.selected = true;
       return sel;
     }
 
@@ -218,9 +266,13 @@
         const groupDiv = document.createElement('div');
         groupDiv.className = 'preview-group';
         groupDiv.textContent = groupName || '(root)';
-        const groupSel = renderScopeSelect(groupScopeOverrides[groupName]);
+        const allowedScopes = [];
+        if (arr.some(i => i.type === 'COLOR')) allowedScopes.push(...colorScopes);
+        if (arr.some(i => i.type !== 'COLOR')) allowedScopes.push(...numberScopes);
+        const groupSel = renderScopeSelect(groupScopeOverrides[groupName], allowedScopes);
         groupSel.onchange = () => {
-          if (groupSel.value) groupScopeOverrides[groupName] = groupSel.value; else delete groupScopeOverrides[groupName];
+          const vals = Array.from(groupSel.selectedOptions).map(o => o.value).filter(v => v);
+          if (vals.length) groupScopeOverrides[groupName] = vals; else delete groupScopeOverrides[groupName];
         };
         groupDiv.appendChild(groupSel);
         previewDiv.appendChild(groupDiv);
@@ -242,11 +294,12 @@
           div.appendChild(name);
           const scopesDiv = document.createElement('div');
           scopesDiv.className = 'preview-scopes';
-          scopesDiv.textContent = item.scopes.join(', ');
+          scopesDiv.textContent = item.scopes.map(s => scopeLabels[s] || s).join(', ');
           div.appendChild(scopesDiv);
-          const scopeSel = renderScopeSelect(itemScopeOverrides[item.name]);
+          const scopeSel = renderScopeSelect(itemScopeOverrides[item.name], item.type === 'COLOR' ? colorScopes : numberScopes);
           scopeSel.onchange = () => {
-            if (scopeSel.value) itemScopeOverrides[item.name] = scopeSel.value; else delete itemScopeOverrides[item.name];
+            const vals = Array.from(scopeSel.selectedOptions).map(o => o.value).filter(v => v);
+            if (vals.length) itemScopeOverrides[item.name] = vals; else delete itemScopeOverrides[item.name];
           };
           div.appendChild(scopeSel);
           previewDiv.appendChild(div);

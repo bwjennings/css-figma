@@ -4571,12 +4571,12 @@
           }
           const modeId = collection.modes[0].modeId;
           const getScopesForName = (name) => {
-            if (itemScopes && itemScopes[name]) {
-              return [itemScopes[name]];
+            if (itemScopes && itemScopes[name] && itemScopes[name].length) {
+              return itemScopes[name];
             }
             const group = getGroup(name);
-            if (groupScopes && groupScopes[group]) {
-              return [groupScopes[group]];
+            if (groupScopes && groupScopes[group] && groupScopes[group].length) {
+              return groupScopes[group];
             }
             return detectVariableScopes(name);
           };

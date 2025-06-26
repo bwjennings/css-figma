@@ -151,8 +151,8 @@ figma.ui.onmessage = async (msg) => {
   if (msg.type === 'import-css') {
     const vars = parseCssVariables(msg.css as string);
     const collectionName = msg.collectionName as string;
-    const itemScopes = msg.itemScopes as Record<string, VariableScope | undefined> | undefined;
-    const groupScopes = msg.groupScopes as Record<string, VariableScope | undefined> | undefined;
+    const itemScopes = msg.itemScopes as Record<string, VariableScope[] | undefined> | undefined;
+    const groupScopes = msg.groupScopes as Record<string, VariableScope[] | undefined> | undefined;
     let collection = figma.variables.getLocalVariableCollections().find(c => c.name === collectionName);
     if (!collection) {
       collection = figma.variables.createVariableCollection(collectionName);
@@ -160,12 +160,12 @@ figma.ui.onmessage = async (msg) => {
     const modeId = collection.modes[0].modeId;
 
     const getScopesForName = (name: string): VariableScope[] => {
-      if (itemScopes && itemScopes[name]) {
-        return [itemScopes[name]!];
+      if (itemScopes && itemScopes[name] && itemScopes[name]!.length) {
+        return itemScopes[name]!;
       }
       const group = getGroup(name);
-      if (groupScopes && groupScopes[group]) {
-        return [groupScopes[group]!];
+      if (groupScopes && groupScopes[group] && groupScopes[group]!.length) {
+        return groupScopes[group]!;
       }
       return detectVariableScopes(name);
     };
