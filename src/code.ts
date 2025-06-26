@@ -34,6 +34,13 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
       continue;
     }
 
+    const numberMatch = valueStr.match(/^[-+]?(?:\d*\.)?\d+$/);
+    if (numberMatch) {
+      const num = parseFloat(valueStr);
+      result[name] = { type: 'FLOAT', value: num };
+      continue;
+    }
+
     const color = parse(valueStr);
     if (color) {
       const rgb = clampRgb(toRGB(color));
@@ -42,10 +49,6 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
         value: { r: rgb.r, g: rgb.g, b: rgb.b, a: rgb.alpha ?? 1 }
       };
       continue;
-    }
-    const num = parseFloat(valueStr);
-    if (!isNaN(num)) {
-      result[name] = { type: 'FLOAT', value: num };
     }
   }
   return result;

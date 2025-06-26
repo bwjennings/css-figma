@@ -4452,6 +4452,12 @@
             result[name] = { type: "ALIAS", value: aliasMatch[1] };
             continue;
           }
+          const numberMatch = valueStr.match(/^[-+]?(?:\d*\.)?\d+$/);
+          if (numberMatch) {
+            const num3 = parseFloat(valueStr);
+            result[name] = { type: "FLOAT", value: num3 };
+            continue;
+          }
           const color = parse_default(valueStr);
           if (color) {
             const rgb3 = clampRgb(toRGB(color));
@@ -4460,10 +4466,6 @@
               value: { r: rgb3.r, g: rgb3.g, b: rgb3.b, a: (_a = rgb3.alpha) != null ? _a : 1 }
             };
             continue;
-          }
-          const num3 = parseFloat(valueStr);
-          if (!isNaN(num3)) {
-            result[name] = { type: "FLOAT", value: num3 };
           }
         }
         return result;
