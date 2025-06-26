@@ -4429,6 +4429,33 @@
         type: "collections",
         collections: figma.variables.getLocalVariableCollections().map((c2) => c2.name)
       });
+      var VARIABLE_SCOPES = [
+        "TEXT_CONTENT",
+        "CORNER_RADIUS",
+        "WIDTH_HEIGHT",
+        "GAP",
+        "ALL_FILLS",
+        "FRAME_FILL",
+        "SHAPE_FILL",
+        "TEXT_FILL",
+        "STROKE_COLOR",
+        "STROKE_FLOAT",
+        "EFFECT_FLOAT",
+        "EFFECT_COLOR",
+        "OPACITY",
+        "FONT_FAMILY",
+        "FONT_STYLE",
+        "FONT_WEIGHT",
+        "FONT_SIZE",
+        "LINE_HEIGHT",
+        "LETTER_SPACING",
+        "PARAGRAPH_SPACING",
+        "PARAGRAPH_INDENT"
+      ];
+      function detectVariableScopes(name) {
+        const normalized = name.replace(/[^a-zA-Z0-9]+/g, "_").toUpperCase();
+        return VARIABLE_SCOPES.filter((scope) => normalized.includes(scope));
+      }
       function toFigmaName(name) {
         const parts = name.split("-");
         if (parts.length > 1) {
@@ -4515,6 +4542,10 @@
             }
             variable.setValueForMode(modeId, data.value);
             variable.setVariableCodeSyntax("WEB", `var(--${cssName})`);
+            const scopes = detectVariableScopes(cssName);
+            if (scopes.length) {
+              variable.scopes = scopes;
+            }
             created[cssName] = variable;
             nameMap.set(cssName, variable);
           }
@@ -4536,6 +4567,10 @@
                 const alias = figma.variables.createVariableAlias(target);
                 variable.setValueForMode(modeId, alias);
                 variable.setVariableCodeSyntax("WEB", `var(--${cssName})`);
+                const scopes = detectVariableScopes(cssName);
+                if (scopes.length) {
+                  variable.scopes = scopes;
+                }
                 created[cssName] = variable;
                 nameMap.set(cssName, variable);
               } else {

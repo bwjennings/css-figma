@@ -9,6 +9,35 @@ figma.ui.postMessage({
 // Helper to parse CSS variable definitions
 type ParsedVar = { type: 'COLOR' | 'FLOAT' | 'ALIAS'; value: any };
 
+const VARIABLE_SCOPES: VariableScope[] = [
+  'TEXT_CONTENT',
+  'CORNER_RADIUS',
+  'WIDTH_HEIGHT',
+  'GAP',
+  'ALL_FILLS',
+  'FRAME_FILL',
+  'SHAPE_FILL',
+  'TEXT_FILL',
+  'STROKE_COLOR',
+  'STROKE_FLOAT',
+  'EFFECT_FLOAT',
+  'EFFECT_COLOR',
+  'OPACITY',
+  'FONT_FAMILY',
+  'FONT_STYLE',
+  'FONT_WEIGHT',
+  'FONT_SIZE',
+  'LINE_HEIGHT',
+  'LETTER_SPACING',
+  'PARAGRAPH_SPACING',
+  'PARAGRAPH_INDENT'
+];
+
+function detectVariableScopes(name: string): VariableScope[] {
+  const normalized = name.replace(/[^a-zA-Z0-9]+/g, '_').toUpperCase();
+  return VARIABLE_SCOPES.filter(scope => normalized.includes(scope));
+}
+
 function toFigmaName(name: string): string {
   const parts = name.split('-');
   if (parts.length > 1) {
@@ -104,6 +133,10 @@ figma.ui.onmessage = async (msg) => {
       }
       variable.setValueForMode(modeId, data.value);
       variable.setVariableCodeSyntax('WEB', `var(--${cssName})`);
+      const scopes = detectVariableScopes(cssName);
+      if (scopes.length) {
+        variable.scopes = scopes;
+      }
       created[cssName] = variable;
       nameMap.set(cssName, variable);
     }
@@ -129,6 +162,10 @@ figma.ui.onmessage = async (msg) => {
           const alias = figma.variables.createVariableAlias(target);
           variable.setValueForMode(modeId, alias);
           variable.setVariableCodeSyntax('WEB', `var(--${cssName})`);
+          const scopes = detectVariableScopes(cssName);
+          if (scopes.length) {
+            variable.scopes = scopes;
+          }
           created[cssName] = variable;
           nameMap.set(cssName, variable);
         } else {
