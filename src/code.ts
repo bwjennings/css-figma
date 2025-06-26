@@ -1,11 +1,5 @@
 import { parse, converter, clampRgb } from 'culori';
 
-figma.showUI(__html__, { themeColors: true, width: 360, height: 360 });
-figma.ui.postMessage({
-  type: 'collections',
-  collections: figma.variables.getLocalVariableCollections().map(c => c.name)
-});
-
 // Helper to parse CSS variable definitions
 type ParsedVar = { type: 'COLOR' | 'FLOAT' | 'ALIAS'; value: any };
 
@@ -57,6 +51,13 @@ const SCOPE_KEYWORDS: Record<VariableScope, string[]> = {
   PARAGRAPH_INDENT: ['PARAGRAPH_INDENT', 'INDENTATION']
 };
 
+figma.showUI(__html__, { themeColors: true, width: 400, height: 480 });
+figma.ui.postMessage({
+  type: 'init',
+  collections: figma.variables.getLocalVariableCollections().map(c => c.name),
+  scopes: VARIABLE_SCOPES
+});
+
 function detectVariableScopes(name: string): VariableScope[] {
   const normalized = name.replace(/[^a-zA-Z0-9]+/g, '_').toUpperCase();
   const scopes = VARIABLE_SCOPES.filter(scope => normalized.includes(scope));
@@ -80,6 +81,12 @@ function toFigmaName(name: string): string {
     return parts.join('/') + '/' + last;
   }
   return name;
+}
+
+function getGroup(name: string): string {
+  const figmaName = toFigmaName(name);
+  const idx = figmaName.lastIndexOf('/');
+  return idx === -1 ? '' : figmaName.slice(0, idx);
 }
 
 function parseCssVariables(css: string): Record<string, ParsedVar> {
@@ -144,11 +151,24 @@ figma.ui.onmessage = async (msg) => {
   if (msg.type === 'import-css') {
     const vars = parseCssVariables(msg.css as string);
     const collectionName = msg.collectionName as string;
+    const itemScopes = msg.itemScopes as Record<string, VariableScope | undefined> | undefined;
+    const groupScopes = msg.groupScopes as Record<string, VariableScope | undefined> | undefined;
     let collection = figma.variables.getLocalVariableCollections().find(c => c.name === collectionName);
     if (!collection) {
       collection = figma.variables.createVariableCollection(collectionName);
     }
     const modeId = collection.modes[0].modeId;
+
+    const getScopesForName = (name: string): VariableScope[] => {
+      if (itemScopes && itemScopes[name]) {
+        return [itemScopes[name]!];
+      }
+      const group = getGroup(name);
+      if (groupScopes && groupScopes[group]) {
+        return [groupScopes[group]!];
+      }
+      return detectVariableScopes(name);
+    };
     const allVars = await figma.variables.getLocalVariablesAsync();
     const nameMap = new Map<string, Variable>();
     for (const v of allVars) {
@@ -179,7 +199,7 @@ figma.ui.onmessage = async (msg) => {
       }
       variable.setValueForMode(modeId, data.value);
       variable.setVariableCodeSyntax('WEB', `var(--${cssName})`);
-      const scopes = detectVariableScopes(cssName);
+      const scopes = getScopesForName(cssName);
       if (scopes.length) {
         variable.scopes = scopes;
       }
@@ -208,7 +228,7 @@ figma.ui.onmessage = async (msg) => {
           const alias = figma.variables.createVariableAlias(target);
           variable.setValueForMode(modeId, alias);
           variable.setVariableCodeSyntax('WEB', `var(--${cssName})`);
-          const scopes = detectVariableScopes(cssName);
+          const scopes = getScopesForName(cssName);
           if (scopes.length) {
             variable.scopes = scopes;
           }

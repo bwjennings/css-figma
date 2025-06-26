@@ -4424,11 +4424,6 @@
   var require_code = __commonJS({
     "src/code.ts"() {
       init_src();
-      figma.showUI(__html__, { themeColors: true, width: 360, height: 360 });
-      figma.ui.postMessage({
-        type: "collections",
-        collections: figma.variables.getLocalVariableCollections().map((c2) => c2.name)
-      });
       var VARIABLE_SCOPES = [
         "TEXT_CONTENT",
         "CORNER_RADIUS",
@@ -4475,6 +4470,12 @@
         PARAGRAPH_SPACING: ["PARAGRAPH_SPACING", "PARAGRAPH_GAP"],
         PARAGRAPH_INDENT: ["PARAGRAPH_INDENT", "INDENTATION"]
       };
+      figma.showUI(__html__, { themeColors: true, width: 400, height: 480 });
+      figma.ui.postMessage({
+        type: "init",
+        collections: figma.variables.getLocalVariableCollections().map((c2) => c2.name),
+        scopes: VARIABLE_SCOPES
+      });
       function detectVariableScopes(name) {
         const normalized = name.replace(/[^a-zA-Z0-9]+/g, "_").toUpperCase();
         const scopes = VARIABLE_SCOPES.filter((scope) => normalized.includes(scope));
@@ -4497,6 +4498,11 @@
           return parts.join("/") + "/" + last;
         }
         return name;
+      }
+      function getGroup(name) {
+        const figmaName = toFigmaName(name);
+        const idx = figmaName.lastIndexOf("/");
+        return idx === -1 ? "" : figmaName.slice(0, idx);
       }
       function parseCssVariables(css) {
         var _a;
@@ -4557,11 +4563,23 @@
         if (msg.type === "import-css") {
           const vars = parseCssVariables(msg.css);
           const collectionName = msg.collectionName;
+          const itemScopes = msg.itemScopes;
+          const groupScopes = msg.groupScopes;
           let collection = figma.variables.getLocalVariableCollections().find((c2) => c2.name === collectionName);
           if (!collection) {
             collection = figma.variables.createVariableCollection(collectionName);
           }
           const modeId = collection.modes[0].modeId;
+          const getScopesForName = (name) => {
+            if (itemScopes && itemScopes[name]) {
+              return [itemScopes[name]];
+            }
+            const group = getGroup(name);
+            if (groupScopes && groupScopes[group]) {
+              return [groupScopes[group]];
+            }
+            return detectVariableScopes(name);
+          };
           const allVars = await figma.variables.getLocalVariablesAsync();
           const nameMap = /* @__PURE__ */ new Map();
           for (const v of allVars) {
@@ -4587,7 +4605,7 @@
             }
             variable.setValueForMode(modeId, data.value);
             variable.setVariableCodeSyntax("WEB", `var(--${cssName})`);
-            const scopes = detectVariableScopes(cssName);
+            const scopes = getScopesForName(cssName);
             if (scopes.length) {
               variable.scopes = scopes;
             }
@@ -4612,7 +4630,7 @@
                 const alias = figma.variables.createVariableAlias(target);
                 variable.setValueForMode(modeId, alias);
                 variable.setVariableCodeSyntax("WEB", `var(--${cssName})`);
-                const scopes = detectVariableScopes(cssName);
+                const scopes = getScopesForName(cssName);
                 if (scopes.length) {
                   variable.scopes = scopes;
                 }

@@ -100,6 +100,22 @@
       margin-bottom: 4px;
     }
 
+    .preview-group {
+      font-weight: bold;
+      margin-top: 4px;
+    }
+
+    .preview-item-inner {
+      display: flex;
+      align-items: center;
+      margin-left: 8px;
+    }
+
+    .scope-select {
+      margin-left: 4px;
+      font-size: 11px;
+    }
+
     .preview-color {
       width: 12px;
       height: 12px;
@@ -134,6 +150,24 @@
     const select = document.getElementById('collectionSelect');
     const newInput = document.getElementById('newCollection');
     const previewDiv = document.getElementById('preview');
+    let scopes = [];
+    const itemScopeOverrides = {};
+    const groupScopeOverrides = {};
+
+    function toFigmaName(name) {
+      const parts = name.split('-');
+      if (parts.length > 1) {
+        const last = parts.pop();
+        return parts.join('/') + '/' + last;
+      }
+      return name;
+    }
+
+    function getGroup(name) {
+      const figmaName = toFigmaName(name);
+      const idx = figmaName.lastIndexOf('/');
+      return idx === -1 ? '' : figmaName.slice(0, idx);
+    }
 
     function sendPreview() {
       parent.postMessage({ pluginMessage: { type: 'preview-css', css: textarea.value } }, '*');
@@ -155,27 +189,44 @@
       updateButtonState();
     });
 
-    window.onmessage = (event) => {
-      const msg = event.data.pluginMessage;
-      if (msg.type === 'collections') {
-        select.innerHTML = '';
-        for (const name of msg.collections) {
-          const opt = document.createElement('option');
-          opt.value = name;
-          opt.textContent = name;
-          select.appendChild(opt);
-        }
-        const newOpt = document.createElement('option');
-        newOpt.value = '__new__';
-        newOpt.textContent = 'New collection...';
-        select.appendChild(newOpt);
-        updateButtonState();
+    function renderScopeSelect(current) {
+      const sel = document.createElement('select');
+      sel.className = 'scope-select';
+      const none = document.createElement('option');
+      none.value = '';
+      none.textContent = 'Auto';
+      sel.appendChild(none);
+      for (const s of scopes) {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        sel.appendChild(opt);
       }
-      if (msg.type === 'preview-data') {
-        previewDiv.innerHTML = '';
-        for (const item of msg.preview) {
+      sel.value = current || '';
+      return sel;
+    }
+
+    function renderPreview(items) {
+      previewDiv.innerHTML = '';
+      const groups = {};
+      for (const item of items) {
+        const g = getGroup(item.name);
+        if (!groups[g]) groups[g] = [];
+        groups[g].push(item);
+      }
+      for (const [groupName, arr] of Object.entries(groups)) {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'preview-group';
+        groupDiv.textContent = groupName || '(root)';
+        const groupSel = renderScopeSelect(groupScopeOverrides[groupName]);
+        groupSel.onchange = () => {
+          if (groupSel.value) groupScopeOverrides[groupName] = groupSel.value; else delete groupScopeOverrides[groupName];
+        };
+        groupDiv.appendChild(groupSel);
+        previewDiv.appendChild(groupDiv);
+        for (const item of arr) {
           const div = document.createElement('div');
-          div.className = 'preview-item';
+          div.className = 'preview-item-inner';
           const color = document.createElement('div');
           color.className = 'preview-color';
           if (item.type === 'COLOR') {
@@ -189,12 +240,39 @@
           name.className = 'preview-name';
           name.textContent = item.name;
           div.appendChild(name);
-          const scopes = document.createElement('div');
-          scopes.className = 'preview-scopes';
-          scopes.textContent = item.scopes.join(', ');
-          div.appendChild(scopes);
+          const scopesDiv = document.createElement('div');
+          scopesDiv.className = 'preview-scopes';
+          scopesDiv.textContent = item.scopes.join(', ');
+          div.appendChild(scopesDiv);
+          const scopeSel = renderScopeSelect(itemScopeOverrides[item.name]);
+          scopeSel.onchange = () => {
+            if (scopeSel.value) itemScopeOverrides[item.name] = scopeSel.value; else delete itemScopeOverrides[item.name];
+          };
+          div.appendChild(scopeSel);
           previewDiv.appendChild(div);
         }
+      }
+    }
+
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      if (msg.type === 'init') {
+        select.innerHTML = '';
+        for (const name of msg.collections) {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          select.appendChild(opt);
+        }
+        const newOpt = document.createElement('option');
+        newOpt.value = '__new__';
+        newOpt.textContent = 'New collection...';
+        select.appendChild(newOpt);
+        scopes = msg.scopes;
+        updateButtonState();
+      }
+      if (msg.type === 'preview-data') {
+        renderPreview(msg.preview);
       }
     };
 
@@ -208,7 +286,7 @@
         collectionName = newInput.value.trim();
         create = true;
       }
-      parent.postMessage({ pluginMessage: { type: 'import-css', css, collectionName, create } }, '*');
+      parent.postMessage({ pluginMessage: { type: 'import-css', css, collectionName, create, itemScopes: itemScopeOverrides, groupScopes: groupScopeOverrides } }, '*');
     };
   </script>
 </body>
