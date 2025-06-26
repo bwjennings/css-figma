@@ -1,6 +1,10 @@
 import { parse, converter, clampRgb } from 'culori';
 
-figma.showUI(__html__, { themeColors: true,width: 360, height: 320 });
+figma.showUI(__html__, { themeColors: true, width: 360, height: 360 });
+figma.ui.postMessage({
+  type: 'collections',
+  collections: figma.variables.getLocalVariableCollections().map(c => c.name)
+});
 
 // Helper to parse CSS variable definitions
 type ParsedVar = { type: 'COLOR' | 'FLOAT' | 'ALIAS'; value: any };
@@ -50,7 +54,7 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
 figma.ui.onmessage = async (msg) => {
   if (msg.type === 'import-css') {
     const vars = parseCssVariables(msg.css as string);
-    const collectionName = 'CSS Variables';
+    const collectionName = msg.collectionName as string;
     let collection = figma.variables.getLocalVariableCollections().find(c => c.name === collectionName);
     if (!collection) {
       collection = figma.variables.createVariableCollection(collectionName);
@@ -68,6 +72,8 @@ figma.ui.onmessage = async (msg) => {
     }
 
     const created: Record<string, Variable> = {};
+    let added = 0;
+    let updated = 0;
 
     // First, handle non-alias variables
     for (const [cssName, data] of Object.entries(vars)) {
@@ -78,6 +84,9 @@ figma.ui.onmessage = async (msg) => {
         .find(v => v.name === figmaName);
       if (!variable) {
         variable = figma.variables.createVariable(figmaName, collection!.id, data.type);
+        added++;
+      } else {
+        updated++;
       }
       variable.setValueForMode(modeId, data.value);
       variable.setVariableCodeSyntax('WEB', `var(--${cssName})`);
@@ -99,6 +108,9 @@ figma.ui.onmessage = async (msg) => {
             .find(v => v.name === figmaName);
           if (!variable) {
             variable = figma.variables.createVariable(figmaName, collection!.id, target.resolvedType);
+            added++;
+          } else {
+            updated++;
           }
           const alias = figma.variables.createVariableAlias(target);
           variable.setValueForMode(modeId, alias);
@@ -113,7 +125,15 @@ figma.ui.onmessage = async (msg) => {
       generations--;
     }
 
-    figma.notify(`Imported ${Object.keys(vars).length - aliasEntries.length} variables`);
+    let message = '';
+    if (added && updated) {
+      message = `Added ${added} and updated ${updated} variables in ${collection.name}`;
+    } else if (added) {
+      message = `Added ${added} variables to ${collection.name}`;
+    } else {
+      message = `Updated ${updated} variables in ${collection.name}`;
+    }
+    figma.notify(message);
     figma.closePlugin();
   }
 };
