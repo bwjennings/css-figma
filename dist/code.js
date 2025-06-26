@@ -4458,6 +4458,16 @@
             result[name] = { type: "FLOAT", value: num3 };
             continue;
           }
+          const unitMatch = valueStr.match(/^(-?\d*\.?\d+)([a-zA-Z%]+)$/);
+          if (unitMatch) {
+            let num3 = parseFloat(unitMatch[1]);
+            const unit = unitMatch[2].toLowerCase();
+            if (unit === "rem") {
+              num3 *= 16;
+            }
+            result[name] = { type: "FLOAT", value: num3 };
+            continue;
+          }
           const color = parse_default(valueStr);
           if (color) {
             const rgb3 = clampRgb(toRGB(color));
