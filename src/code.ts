@@ -217,7 +217,9 @@ figma.ui.onmessage = async (msg) => {
         .map(id => figma.variables.getVariableById(id)!)
         .find(v => v.name === figmaName);
       if (!variable) {
-        variable = figma.variables.createVariable(figmaName, collection!.id, data.type);
+        // createVariable previously accepted a collection ID, but now requires the
+        // collection object itself. Pass the collection node instead of its ID.
+        variable = figma.variables.createVariable(figmaName, collection!, data.type);
         added++;
       } else {
         updated++;
@@ -245,7 +247,8 @@ figma.ui.onmessage = async (msg) => {
             .map(id => figma.variables.getVariableById(id)!)
             .find(v => v.name === figmaName);
           if (!variable) {
-            variable = figma.variables.createVariable(figmaName, collection!.id, target.resolvedType);
+            // Pass the collection node directly instead of its deprecated ID
+            variable = figma.variables.createVariable(figmaName, collection!, target.resolvedType);
             added++;
           } else {
             updated++;
