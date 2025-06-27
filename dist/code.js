@@ -4621,7 +4621,7 @@
             const figmaName = toFigmaName(cssName);
             let variable = collection.variableIds.map((id) => figma.variables.getVariableById(id)).find((v) => v.name === figmaName);
             if (!variable) {
-              variable = figma.variables.createVariable(figmaName, collection.id, data.type);
+              variable = figma.variables.createVariable(figmaName, collection, data.type);
               added++;
             } else {
               updated++;
@@ -4645,7 +4645,7 @@
                 const figmaName = toFigmaName(cssName);
                 let variable = collection.variableIds.map((id) => figma.variables.getVariableById(id)).find((v) => v.name === figmaName);
                 if (!variable) {
-                  variable = figma.variables.createVariable(figmaName, collection.id, target.resolvedType);
+                  variable = figma.variables.createVariable(figmaName, collection, target.resolvedType);
                   added++;
                 } else {
                   updated++;
