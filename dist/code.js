@@ -4530,22 +4530,23 @@
       function parseCssVariables(css) {
         var _a;
         const result = {};
-        css = css.replace(/\/\*[\s\S]*?\*\//g, "");
-        const re = /--([a-zA-Z0-9\-_]+)\s*:\s*([^;]+);/g;
+        const re = /--([a-zA-Z0-9\-_]+)\s*:\s*([^;]+);(?:[ \t]*\/\*([^]*?)\*\/)?/g;
         let m;
         const toRGB = converter_default("rgb");
         while ((m = re.exec(css)) !== null) {
           const name = m[1];
           const valueStr = m[2].trim();
+          let description = m[3] ? m[3].trim() : void 0;
+          if (description && description.startsWith("-")) description = void 0;
           const aliasMatch = valueStr.match(/^var\(--([a-zA-Z0-9\-_]+)\)$/);
           if (aliasMatch) {
-            result[name] = { type: "ALIAS", value: aliasMatch[1] };
+            result[name] = { type: "ALIAS", value: aliasMatch[1], description };
             continue;
           }
           const numberMatch = valueStr.match(/^[-+]?(?:\d*\.)?\d+$/);
           if (numberMatch) {
             const num3 = parseFloat(valueStr);
-            result[name] = { type: "FLOAT", value: num3 };
+            result[name] = { type: "FLOAT", value: num3, description };
             continue;
           }
           const unitMatch = valueStr.match(/^(-?\d*\.?\d+)([a-zA-Z%]+)$/);
@@ -4555,7 +4556,7 @@
             if (unit === "rem") {
               num3 *= 16;
             }
-            result[name] = { type: "FLOAT", value: num3 };
+            result[name] = { type: "FLOAT", value: num3, description };
             continue;
           }
           const color = parse_default(valueStr);
@@ -4563,7 +4564,8 @@
             const rgb3 = clampRgb(toRGB(color));
             result[name] = {
               type: "COLOR",
-              value: { r: rgb3.r, g: rgb3.g, b: rgb3.b, a: (_a = rgb3.alpha) != null ? _a : 1 }
+              value: { r: rgb3.r, g: rgb3.g, b: rgb3.b, a: (_a = rgb3.alpha) != null ? _a : 1 },
+              description
             };
             continue;
           }
@@ -4628,6 +4630,9 @@
             }
             variable.setValueForMode(modeId, data.value);
             variable.setVariableCodeSyntax("WEB", `var(--${cssName})`);
+            if (data.description) {
+              variable.description = data.description;
+            }
             const scopes = filterScopesForType(getScopesForName(cssName), data.type);
             if (scopes.length) {
               variable.scopes = scopes;
@@ -4653,6 +4658,9 @@
                 const alias = figma.variables.createVariableAlias(target);
                 variable.setValueForMode(modeId, alias);
                 variable.setVariableCodeSyntax("WEB", `var(--${cssName})`);
+                if (data.description) {
+                  variable.description = data.description;
+                }
                 const scopes = filterScopesForType(getScopesForName(cssName), target.resolvedType);
                 if (scopes.length) {
                   variable.scopes = scopes;

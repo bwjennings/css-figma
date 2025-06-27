@@ -1,7 +1,7 @@
 import { parse, converter, clampRgb } from 'culori';
 
 // Helper to parse CSS variable definitions
-type ParsedVar = { type: 'COLOR' | 'FLOAT' | 'ALIAS'; value: any };
+type ParsedVar = { type: 'COLOR' | 'FLOAT' | 'ALIAS'; value: any; description?: string };
 
 const VARIABLE_SCOPES: VariableScope[] = [
   'TEXT_CONTENT',
@@ -116,24 +116,24 @@ function getGroup(name: string): string {
 
 function parseCssVariables(css: string): Record<string, ParsedVar> {
   const result: Record<string, ParsedVar> = {};
-  // remove comments and surrounding selectors
-  css = css.replace(/\/\*[\s\S]*?\*\//g, '');
-  const re = /--([a-zA-Z0-9\-_]+)\s*:\s*([^;]+);/g;
+  const re = /--([a-zA-Z0-9\-_]+)\s*:\s*([^;]+);(?:[ \t]*\/\*([^]*?)\*\/)?/g;
   let m: RegExpExecArray | null;
   const toRGB = converter('rgb');
   while ((m = re.exec(css)) !== null) {
     const name = m[1];
     const valueStr = m[2].trim();
+    let description = m[3] ? m[3].trim() : undefined;
+    if (description && description.startsWith('-')) description = undefined;
     const aliasMatch = valueStr.match(/^var\(--([a-zA-Z0-9\-_]+)\)$/);
     if (aliasMatch) {
-      result[name] = { type: 'ALIAS', value: aliasMatch[1] };
+      result[name] = { type: 'ALIAS', value: aliasMatch[1], description };
       continue;
     }
 
     const numberMatch = valueStr.match(/^[-+]?(?:\d*\.)?\d+$/);
     if (numberMatch) {
       const num = parseFloat(valueStr);
-      result[name] = { type: 'FLOAT', value: num };
+      result[name] = { type: 'FLOAT', value: num, description };
       continue;
     }
 
@@ -144,7 +144,7 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
       if (unit === 'rem') {
         num *= 16;
       }
-      result[name] = { type: 'FLOAT', value: num };
+      result[name] = { type: 'FLOAT', value: num, description };
       continue;
     }
 
@@ -153,7 +153,8 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
       const rgb = clampRgb(toRGB(color));
       result[name] = {
         type: 'COLOR',
-        value: { r: rgb.r, g: rgb.g, b: rgb.b, a: rgb.alpha ?? 1 }
+        value: { r: rgb.r, g: rgb.g, b: rgb.b, a: rgb.alpha ?? 1 },
+        description
       };
       continue;
     }
@@ -226,6 +227,9 @@ figma.ui.onmessage = async (msg) => {
       }
       variable.setValueForMode(modeId, data.value);
       variable.setVariableCodeSyntax('WEB', `var(--${cssName})`);
+      if (data.description) {
+        variable.description = data.description;
+      }
       const scopes = filterScopesForType(getScopesForName(cssName), data.type);
       if (scopes.length) {
         variable.scopes = scopes;
@@ -256,6 +260,9 @@ figma.ui.onmessage = async (msg) => {
           const alias = figma.variables.createVariableAlias(target);
           variable.setValueForMode(modeId, alias);
           variable.setVariableCodeSyntax('WEB', `var(--${cssName})`);
+          if (data.description) {
+            variable.description = data.description;
+          }
             const scopes = filterScopesForType(getScopesForName(cssName), target.resolvedType);
             if (scopes.length) {
               variable.scopes = scopes;
