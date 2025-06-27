@@ -4448,7 +4448,7 @@
         "PARAGRAPH_INDENT"
       ];
       var SCOPE_KEYWORDS = {
-        TEXT_CONTENT: ["TEXT", "CONTENT", "STRING"],
+        TEXT_CONTENT: ["CONTENT", "STRING"],
         CORNER_RADIUS: ["RADIUS", "BORDER_RADIUS", "ROUNDNESS"],
         WIDTH_HEIGHT: ["WIDTH", "HEIGHT", "DIMENSION"],
         GAP: ["GAP", "SPACING", "SPACE"],
@@ -4470,6 +4470,29 @@
         PARAGRAPH_SPACING: ["PARAGRAPH_SPACING", "PARAGRAPH_GAP"],
         PARAGRAPH_INDENT: ["PARAGRAPH_INDENT", "INDENTATION"]
       };
+      var SCOPES_BY_TYPE = {
+        COLOR: ["ALL_FILLS", "FRAME_FILL", "SHAPE_FILL", "TEXT_FILL", "STROKE_COLOR", "EFFECT_COLOR"],
+        FLOAT: [
+          "CORNER_RADIUS",
+          "WIDTH_HEIGHT",
+          "GAP",
+          "STROKE_FLOAT",
+          "EFFECT_FLOAT",
+          "OPACITY",
+          "FONT_WEIGHT",
+          "FONT_SIZE",
+          "LINE_HEIGHT",
+          "LETTER_SPACING",
+          "PARAGRAPH_SPACING",
+          "PARAGRAPH_INDENT"
+        ],
+        STRING: ["TEXT_CONTENT", "FONT_FAMILY", "FONT_STYLE"],
+        BOOLEAN: []
+      };
+      function filterScopesForType(scopes, type) {
+        const allowed = SCOPES_BY_TYPE[type];
+        return scopes.filter((s) => allowed.includes(s));
+      }
       figma.showUI(__html__, { themeColors: true, width: 400, height: 480 });
       figma.ui.postMessage({
         type: "init",
@@ -4555,7 +4578,7 @@
             name,
             type: data.type,
             value: data.value,
-            scopes: detectVariableScopes(name)
+            scopes: filterScopesForType(detectVariableScopes(name), data.type)
           }));
           figma.ui.postMessage({ type: "preview-data", preview });
           return;
@@ -4605,7 +4628,7 @@
             }
             variable.setValueForMode(modeId, data.value);
             variable.setVariableCodeSyntax("WEB", `var(--${cssName})`);
-            const scopes = getScopesForName(cssName);
+            const scopes = filterScopesForType(getScopesForName(cssName), data.type);
             if (scopes.length) {
               variable.scopes = scopes;
             }
@@ -4630,7 +4653,7 @@
                 const alias = figma.variables.createVariableAlias(target);
                 variable.setValueForMode(modeId, alias);
                 variable.setVariableCodeSyntax("WEB", `var(--${cssName})`);
-                const scopes = getScopesForName(cssName);
+                const scopes = filterScopesForType(getScopesForName(cssName), target.resolvedType);
                 if (scopes.length) {
                   variable.scopes = scopes;
                 }
