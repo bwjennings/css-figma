@@ -108,6 +108,10 @@ function toFigmaName(name: string): string {
   return name;
 }
 
+function toCssName(figmaName: string): string {
+  return figmaName.replace(/\//g, '-');
+}
+
 function getGroup(name: string): string {
   const figmaName = toFigmaName(name);
   const idx = figmaName.lastIndexOf('/');
@@ -200,6 +204,7 @@ figma.ui.onmessage = async (msg) => {
     const nameMap = new Map<string, Variable>();
     for (const v of allVars) {
       nameMap.set(v.name, v);
+      nameMap.set(toCssName(v.name), v);
       const css = v.codeSyntax?.WEB;
       const match = css?.match(/^var\(--([a-zA-Z0-9\-_]+)\)$/);
       if (match) {
