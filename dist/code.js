@@ -4580,6 +4580,7 @@
             name,
             type: data.type,
             value: data.value,
+            description: data.description,
             scopes: filterScopesForType(detectVariableScopes(name), data.type)
           }));
           figma.ui.postMessage({ type: "preview-data", preview });
