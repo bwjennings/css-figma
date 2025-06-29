@@ -4,146 +4,177 @@
   <meta charset="UTF-8">
   <style>
     :root {
-      --color-bg: var(--figma-color-bg);
-      --color-bg-secondary: var(--figma-color-bg-secondary);
-      --color-bg-hover: var(--figma-color-bg-hover);
-      --color-bg-active: var(--figma-color-bg-pressed);
-      --color-bg-disabled: var(--figma-color-bg-disabled);
-      --color-border: var(--figma-color-border);
-      --color-border-focus: var(--figma-color-border-selected);
-      --color-text: var(--figma-color-text);
-      --color-text-tertiary: var(--figma-color-text-tertiary);
-      --color-text-disabled: var(--figma-color-text-disabled);
-      --color-bg-brand: var(--figma-color-bg-brand);
-      --color-bg-brand-hover: var(--figma-color-bg-brand-hover);
-      --color-bg-brand-active: var(--figma-color-bg-brand-pressed);
-      --color-text-onbrand: var(--figma-color-text-onbrand);
+      --color-bg: #ffffff;
+      --color-bg-secondary: #f5f5f5;
+      --color-border: #e6e6e6;
+      --color-text: #000000e5;
+      --color-text-secondary: #00000080;
+      --color-text-tertiary: #0000004d;
+      --color-bg-brand: #0d99ff;
+      --color-text-onbrand: #ffffff;
+      --color-blue-50: #e7e8e7;
+      --color-blue-100: #d7d7d7;
+      --color-blue-200: #b9bab9;
+      --color-blue-300: #9fa09f;
+      --border-radius-lg: 8px;
+      --border-radius-md: 5px;
+      --border-radius-sm: 3.2px;
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     }
-
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
       background: var(--color-bg);
       color: var(--color-text);
-      margin: 16px;
+      font-family: var(--font-family);
+      margin: 0;
+      padding: 0;
+      min-width: 400px;
+      min-height: 480px;
     }
-
-    textarea {
-      width: 100%;
-      height: 200px;
+    .container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: var(--color-bg);
+    }
+    .input-section {
+      padding: 16px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .css-input-box {
       background: var(--color-bg-secondary);
-      color: var(--color-text);
       border: 1px solid var(--color-border);
-      border-radius: 4px;
-      padding: 4px;
-    }
-
-    select, input[type="text"] {
+      border-radius: var(--border-radius-lg);
+      padding: 8px;
       width: 100%;
-      background: var(--color-bg-secondary);
+      height: 120px;
+      font-size: 11px;
       color: var(--color-text);
+      font-family: var(--font-family);
+      resize: vertical;
+      margin-bottom: 8px;
+    }
+    .group {
+      margin-top: 24px;
+      background: var(--color-bg);
+      border-radius: var(--border-radius-lg);
+      box-shadow: none;
       border: 1px solid var(--color-border);
-      border-radius: 4px;
-      padding: 4px;
-      margin-top: 4px;
+      overflow: hidden;
     }
-
-    textarea:focus-visible {
-      outline: none;
-      border-color: var(--color-border-focus);
+    .group-label {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 16px 12px 16px;
+      border-bottom: 1px solid var(--color-border);
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--color-text);
+      background: var(--color-bg);
+      height: 48px;
     }
-
-    textarea::placeholder {
+    .group-scope {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-md);
+      padding: 2px 8px 2px 8px;
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      margin-left: 8px;
+    }
+    .variable-row {
+      display: flex;
+      align-items: center;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--color-border);
+      font-size: 11px;
+      background: var(--color-bg);
+    }
+    .variable-row:last-child {
+      border-bottom: none;
+    }
+    .variable-name {
+      font-weight: 450;
+      color: var(--color-text);
+      flex: 1 1 0;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .variable-desc {
       color: var(--color-text-tertiary);
+      margin-left: 8px;
+      flex: 2 1 0;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-
-    button {
-      margin-top: 8px;
+    .variable-value {
+      color: var(--color-text-tertiary);
+      margin-left: 8px;
+      min-width: 60px;
+      text-align: right;
+    }
+    .variable-swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: var(--border-radius-sm);
+      background: var(--color-blue-50);
+      margin-left: 8px;
+      border: 1px solid var(--color-border);
+      flex-shrink: 0;
+    }
+    .footer {
+      border-top: 1px solid var(--color-border);
+      padding: 16px;
+      display: flex;
+      justify-content: flex-end;
+      background: var(--color-bg);
+    }
+    .primary-btn {
       background: var(--color-bg-brand);
       color: var(--color-text-onbrand);
       border: none;
-      border-radius: 4px;
-      padding: 4px 8px;
+      border-radius: var(--border-radius-md);
+      padding: 6px 16px;
+      font-size: 11px;
+      font-family: var(--font-family);
+      font-weight: 500;
       cursor: pointer;
+      transition: background 0.2s;
     }
-
-    button:disabled {
-      background: var(--color-bg-disabled);
-      color: var(--color-text-disabled);
+    .primary-btn:disabled {
+      background: var(--color-border);
+      color: var(--color-text-tertiary);
       cursor: default;
     }
-
-    button:hover {
-      background: var(--color-bg-brand-hover);
+    .primary-btn:hover:not(:disabled) {
+      background: #158fff;
     }
-
-    button:active {
-      background: var(--color-bg-brand-active);
-    }
-
-    button:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 2px var(--color-border-focus);
-    }
-
-    #preview {
-      margin-top: 12px;
-      max-height: 120px;
-      overflow-y: auto;
-      border-top: 1px solid var(--color-border);
-      padding-top: 8px;
-    }
-
-    .preview-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 4px;
-    }
-
-    .preview-group {
-      font-weight: bold;
-      margin-top: 4px;
-    }
-
-    .preview-item-inner {
-      display: flex;
-      align-items: center;
-      margin-left: 8px;
-    }
-
-    .scope-select {
-      margin-left: 4px;
-      font-size: 11px;
-    }
-
-    .preview-color {
-      width: 12px;
-      height: 12px;
-      border-radius: 2px;
-      border: 1px solid var(--color-border);
-      margin-right: 6px;
-    }
-
-    .preview-name {
-      flex: 1;
-    }
-
-    .preview-scopes {
-      color: var(--color-text-tertiary);
-      font-size: 11px;
+    .primary-btn:active:not(:disabled) {
+      background: #0d7fd1;
     }
   </style>
 </head>
 <body>
-  <h2>Paste CSS Variables</h2>
-  <textarea id="cssInput" placeholder="--primary: #ff0000;\n--spacing: 8px;"></textarea>
-  <br />
-  <label for="collectionSelect">Collection:</label>
-  <select id="collectionSelect"></select>
-  <input id="newCollection" type="text" placeholder="New collection name" style="display:none; width: 100%; margin-top: 4px;" />
-  <br />
-  <button id="import">Import</button>
-  <div id="preview"></div>
+  <div class="container">
+    <div class="input-section">
+      <textarea class="css-input-box" id="cssInput" placeholder="--primary: #ff0000;\n--spacing: 8px;"></textarea>
+      <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px;">
+        <label for="collectionSelect" style="font-size: 11px; color: var(--color-text-tertiary);">Collection:</label>
+        <select id="collectionSelect" style="flex: 1;"></select>
+        <input id="newCollection" type="text" placeholder="New collection name" style="display:none; width: 160px; font-size: 11px; margin-left: 8px;" />
+      </div>
+    </div>
+    <div id="preview" style="flex: 1 1 auto; overflow-y: auto; padding: 0 16px;"></div>
+    <div class="footer">
+      <button class="primary-btn" id="import">Create Variables</button>
+    </div>
+  </div>
   <script>
     const textarea = document.getElementById('cssInput');
     const importBtn = document.getElementById('import');
@@ -255,6 +286,7 @@
     }
 
     function renderPreview(items) {
+      const previewDiv = document.getElementById('preview');
       previewDiv.innerHTML = '';
       const groups = {};
       for (const item of items) {
@@ -263,47 +295,58 @@
         groups[g].push(item);
       }
       for (const [groupName, arr] of Object.entries(groups)) {
+        // Group label
         const groupDiv = document.createElement('div');
-        groupDiv.className = 'preview-group';
-        groupDiv.textContent = groupName || '(root)';
+        groupDiv.className = 'group';
+        // Label row
+        const labelDiv = document.createElement('div');
+        labelDiv.className = 'group-label';
+        labelDiv.textContent = groupName || '(root)';
+        // Scope (show first scope if available)
         const allowedScopes = [];
         if (arr.some(i => i.type === 'COLOR')) allowedScopes.push(...colorScopes);
         if (arr.some(i => i.type !== 'COLOR')) allowedScopes.push(...numberScopes);
-        const groupSel = renderScopeSelect(groupScopeOverrides[groupName], allowedScopes);
-        groupSel.onchange = () => {
-          const vals = Array.from(groupSel.selectedOptions).map(o => o.value).filter(v => v);
-          if (vals.length) groupScopeOverrides[groupName] = vals; else delete groupScopeOverrides[groupName];
-        };
-        groupDiv.appendChild(groupSel);
-        previewDiv.appendChild(groupDiv);
+        const scopeDiv = document.createElement('span');
+        scopeDiv.className = 'group-scope';
+        const scopes = arr[0]?.scopes || [];
+        scopeDiv.textContent = scopes.length ? (scopeLabels[scopes[0]] || scopes[0]) : 'All Scopes';
+        labelDiv.appendChild(scopeDiv);
+        groupDiv.appendChild(labelDiv);
+        // Variable rows
         for (const item of arr) {
-          const div = document.createElement('div');
-          div.className = 'preview-item-inner';
-          const color = document.createElement('div');
-          color.className = 'preview-color';
-          if (item.type === 'COLOR') {
+          const row = document.createElement('div');
+          row.className = 'variable-row';
+          // Name
+          const nameDiv = document.createElement('div');
+          nameDiv.className = 'variable-name';
+          nameDiv.textContent = item.name;
+          row.appendChild(nameDiv);
+          // Description (if any)
+          const descDiv = document.createElement('div');
+          descDiv.className = 'variable-desc';
+          descDiv.textContent = item.description || '';
+          row.appendChild(descDiv);
+          // Value
+          const valueDiv = document.createElement('div');
+          valueDiv.className = 'variable-value';
+          if (item.type === 'COLOR' && item.value) {
             const { r, g, b, a } = item.value;
-            color.style.background = `rgba(${Math.round(r*255)}, ${Math.round(g*255)}, ${Math.round(b*255)}, ${a})`;
+            valueDiv.textContent = `rgba(${Math.round(r*255)}, ${Math.round(g*255)}, ${Math.round(b*255)}, ${a})`;
           } else {
-            color.style.background = 'transparent';
+            valueDiv.textContent = item.value;
           }
-          div.appendChild(color);
-          const name = document.createElement('div');
-          name.className = 'preview-name';
-          name.textContent = item.name;
-          div.appendChild(name);
-          const scopesDiv = document.createElement('div');
-          scopesDiv.className = 'preview-scopes';
-          scopesDiv.textContent = item.scopes.map(s => scopeLabels[s] || s).join(', ');
-          div.appendChild(scopesDiv);
-          const scopeSel = renderScopeSelect(itemScopeOverrides[item.name], item.type === 'COLOR' ? colorScopes : numberScopes);
-          scopeSel.onchange = () => {
-            const vals = Array.from(scopeSel.selectedOptions).map(o => o.value).filter(v => v);
-            if (vals.length) itemScopeOverrides[item.name] = vals; else delete itemScopeOverrides[item.name];
-          };
-          div.appendChild(scopeSel);
-          previewDiv.appendChild(div);
+          row.appendChild(valueDiv);
+          // Swatch for color
+          if (item.type === 'COLOR' && item.value) {
+            const swatch = document.createElement('div');
+            swatch.className = 'variable-swatch';
+            const { r, g, b, a } = item.value;
+            swatch.style.background = `rgba(${Math.round(r*255)}, ${Math.round(g*255)}, ${Math.round(b*255)}, ${a})`;
+            row.appendChild(swatch);
+          }
+          groupDiv.appendChild(row);
         }
+        previewDiv.appendChild(groupDiv);
       }
     }
 
