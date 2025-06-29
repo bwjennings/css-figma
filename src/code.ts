@@ -71,8 +71,12 @@ const SCOPES_BY_TYPE: Record<'COLOR' | 'FLOAT' | 'STRING' | 'BOOLEAN', VariableS
   BOOLEAN: []
 };
 
-function filterScopesForType(scopes: VariableScope[], type: 'COLOR' | 'FLOAT' | 'STRING' | 'BOOLEAN'): VariableScope[] {
-  const allowed = SCOPES_BY_TYPE[type];
+function filterScopesForType(
+  scopes: VariableScope[],
+  type: 'COLOR' | 'FLOAT' | 'STRING' | 'BOOLEAN' | string
+): VariableScope[] {
+  const allowed = SCOPES_BY_TYPE[type as 'COLOR' | 'FLOAT' | 'STRING' | 'BOOLEAN'];
+  if (!allowed) return scopes;
   return scopes.filter(s => allowed.includes(s));
 }
 

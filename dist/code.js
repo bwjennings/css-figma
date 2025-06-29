@@ -4491,6 +4491,7 @@
       };
       function filterScopesForType(scopes, type) {
         const allowed = SCOPES_BY_TYPE[type];
+        if (!allowed) return scopes;
         return scopes.filter((s) => allowed.includes(s));
       }
       figma.showUI(__html__, { themeColors: true, width: 400, height: 480 });
