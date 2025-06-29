@@ -4522,6 +4522,9 @@
         }
         return name;
       }
+      function toCssName(figmaName) {
+        return figmaName.replace(/\//g, "-");
+      }
       function getGroup(name) {
         const figmaName = toFigmaName(name);
         const idx = figmaName.lastIndexOf("/");
@@ -4610,6 +4613,7 @@
           const nameMap = /* @__PURE__ */ new Map();
           for (const v of allVars) {
             nameMap.set(v.name, v);
+            nameMap.set(toCssName(v.name), v);
             const css = (_a = v.codeSyntax) == null ? void 0 : _a.WEB;
             const match = css == null ? void 0 : css.match(/^var\(--([a-zA-Z0-9\-_]+)\)$/);
             if (match) {
