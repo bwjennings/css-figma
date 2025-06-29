@@ -128,6 +128,12 @@
       border: 1px solid var(--color-border);
       flex-shrink: 0;
     }
+    .empty-preview {
+      color: var(--color-text-tertiary);
+      text-align: center;
+      padding: 32px 0;
+      font-size: 13px;
+    }
     .footer {
       border-top: 1px solid var(--color-border);
       padding: 16px;
@@ -158,96 +164,6 @@
     .primary-btn:active:not(:disabled) {
       background: #0d7fd1;
     }
-    .variable-preview {
-      flex: 1 1 auto;
-      overflow-y: auto;
-      padding: 0 16px;
-      background: var(--color-bg-secondary);
-      min-height: 120px;
-      border-radius: var(--border-radius-lg);
-      margin-top: 12px;
-    }
-    .variable-group {
-      margin-top: 24px;
-      background: var(--color-bg);
-      border-radius: var(--border-radius-lg);
-      border: 1px solid var(--color-border);
-      overflow: hidden;
-      box-shadow: 0 1px 4px 0 #0000000a;
-    }
-    .variable-group-label {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      padding: 0 16px 12px 16px;
-      border-bottom: 1px solid var(--color-border);
-      font-size: 12px;
-      font-weight: bold;
-      color: var(--color-text);
-      background: var(--color-bg);
-      height: 48px;
-    }
-    .variable-group-scope {
-      display: flex;
-      align-items: center;
-      background: #fff;
-      border: 1px solid var(--color-border);
-      border-radius: var(--border-radius-md);
-      padding: 2px 8px;
-      font-size: 11px;
-      color: var(--color-text-secondary);
-      margin-left: 8px;
-    }
-    .variable-preview-row {
-      display: flex;
-      align-items: center;
-      padding: 8px 16px;
-      border-bottom: 1px solid var(--color-border);
-      font-size: 11px;
-      background: var(--color-bg);
-    }
-    .variable-preview-row:last-child {
-      border-bottom: none;
-    }
-    .variable-preview-name {
-      font-weight: 450;
-      color: var(--color-text);
-      flex: 1 1 0;
-      min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .variable-preview-desc {
-      color: var(--color-text-tertiary);
-      margin-left: 8px;
-      flex: 2 1 0;
-      min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .variable-preview-value {
-      color: var(--color-text-tertiary);
-      margin-left: 8px;
-      min-width: 60px;
-      text-align: right;
-    }
-    .variable-preview-swatch {
-      width: 16px;
-      height: 16px;
-      border-radius: var(--border-radius-sm);
-      background: var(--color-blue-50);
-      margin-left: 8px;
-      border: 1px solid var(--color-border);
-      flex-shrink: 0;
-    }
-    .empty-preview {
-      color: var(--color-text-tertiary);
-      text-align: center;
-      padding: 32px 0;
-      font-size: 13px;
-    }
   </style>
 </head>
 <body>
@@ -260,7 +176,7 @@
         <input id="newCollection" type="text" placeholder="New collection name" style="display:none; width: 160px; font-size: 11px; margin-left: 8px;" />
       </div>
     </div>
-    <div id="preview" class="variable-preview"></div>
+    <div id="preview" style="flex: 1 1 auto; overflow-y: auto; padding: 0 16px;"></div>
     <div class="footer">
       <button class="primary-btn" id="import">Create Variables</button>
     </div>
@@ -378,7 +294,7 @@
     function renderPreview(items) {
       const previewDiv = document.getElementById('preview');
       previewDiv.innerHTML = '';
-      previewDiv.style.display = 'block'; // Ensure preview is always visible
+      previewDiv.style.display = 'block';
       if (!items || items.length === 0) {
         previewDiv.innerHTML = '<div class="empty-preview">No variables to preview</div>';
         return;
@@ -392,17 +308,17 @@
       for (const [groupName, arr] of Object.entries(groups)) {
         // Group label
         const groupDiv = document.createElement('div');
-        groupDiv.className = 'group variable-group';
+        groupDiv.className = 'group';
         // Label row
         const labelDiv = document.createElement('div');
-        labelDiv.className = 'group-label variable-group-label';
+        labelDiv.className = 'group-label';
         labelDiv.textContent = groupName || '(root)';
         // Scope (show first scope if available)
         const allowedScopes = [];
         if (arr.some(i => i.type === 'COLOR')) allowedScopes.push(...colorScopes);
         if (arr.some(i => i.type !== 'COLOR')) allowedScopes.push(...numberScopes);
         const scopeDiv = document.createElement('span');
-        scopeDiv.className = 'group-scope variable-group-scope';
+        scopeDiv.className = 'group-scope';
         const scopes = arr[0]?.scopes || [];
         scopeDiv.textContent = scopes.length ? (scopeLabels[scopes[0]] || scopes[0]) : 'All Scopes';
         labelDiv.appendChild(scopeDiv);
@@ -410,23 +326,21 @@
         // Variable rows
         for (const item of arr) {
           const row = document.createElement('div');
-          row.className = 'variable-row variable-preview-row';
+          row.className = 'variable-row';
           // Name
           const nameDiv = document.createElement('div');
-          nameDiv.className = 'variable-name variable-preview-name';
+          nameDiv.className = 'variable-name';
           nameDiv.textContent = item.name;
           row.appendChild(nameDiv);
           // Description (if any)
           const descDiv = document.createElement('div');
-          descDiv.className = 'variable-desc variable-preview-desc';
+          descDiv.className = 'variable-desc';
           descDiv.textContent = item.description || '';
           row.appendChild(descDiv);
           // Value
           const valueDiv = document.createElement('div');
-          valueDiv.className = 'variable-value variable-preview-value';
-          if (item.type === 'ALIAS' && item.reference) {
-            valueDiv.textContent = item.reference;
-          } else if (item.type === 'COLOR' && item.value) {
+          valueDiv.className = 'variable-value';
+          if (item.type === 'COLOR' && item.value) {
             const { r, g, b, a } = item.value;
             valueDiv.textContent = `rgba(${Math.round(r*255)}, ${Math.round(g*255)}, ${Math.round(b*255)}, ${a})`;
           } else {
@@ -436,7 +350,7 @@
           // Swatch for color
           if (item.type === 'COLOR' && item.value) {
             const swatch = document.createElement('div');
-            swatch.className = 'variable-swatch variable-preview-swatch';
+            swatch.className = 'variable-swatch';
             const { r, g, b, a } = item.value;
             swatch.style.background = `rgba(${Math.round(r*255)}, ${Math.round(g*255)}, ${Math.round(b*255)}, ${a})`;
             row.appendChild(swatch);
