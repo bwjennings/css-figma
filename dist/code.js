@@ -4574,7 +4574,11 @@
             const hStr = relativeMatch[4];
             const base = result[baseName];
             if (base && base.type === "COLOR") {
-              const baseOklch = toOKLCH(__spreadProps(__spreadValues({}, base.value), { alpha: base.value.a }));
+              const baseOklch = toOKLCH(__spreadProps(__spreadValues({
+                mode: "rgb"
+              }, base.value), {
+                alpha: base.value.a
+              }));
               const parseChannel = (str, baseVal, letter) => {
                 if (str === letter) return baseVal;
                 if (str.endsWith("%")) return parseFloat(str) / 100;
