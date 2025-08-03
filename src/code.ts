@@ -127,6 +127,7 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
   const re = /--([a-zA-Z0-9\-_]+)\s*:\s*([^;]+);(?:[ \t]*\/\*([^]*?)\*\/)?/g;
   let m: RegExpExecArray | null;
   const toRGB = converter('rgb');
+  const toOKLCH = converter('oklch');
   while ((m = re.exec(css)) !== null) {
     const name = m[1];
     const valueStr = m[2].trim();
@@ -154,6 +155,50 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
       }
       result[name] = { type: 'FLOAT', value: num, description };
       continue;
+    }
+
+    const relativeMatch = valueStr.match(
+      /^oklch\(from\s+var\(--([\w-]+)\)\s+([^\s]+)\s+([^\s]+)\s+(.+)\)$/
+    );
+    if (relativeMatch) {
+      const baseName = relativeMatch[1];
+      const lStr = relativeMatch[2];
+      const cStr = relativeMatch[3];
+      const hStr = relativeMatch[4];
+      const base = result[baseName];
+      if (base && base.type === 'COLOR') {
+        const baseOklch = toOKLCH({ ...base.value, alpha: base.value.a });
+        const parseChannel = (str: string, baseVal: number, letter: string): number => {
+          if (str === letter) return baseVal;
+          if (str.endsWith('%')) return parseFloat(str) / 100;
+          return parseFloat(str);
+        };
+        const parseHue = (str: string, baseHue: number): number => {
+          if (str === 'h') return baseHue;
+          const calc = str.match(/^calc\(h\s*([+\-])\s*var\(--([\w-]+)\)\)$/);
+          if (calc) {
+            const op = calc[1];
+            const varName = calc[2];
+            const shift = result[varName];
+            if (shift && shift.type === 'FLOAT') {
+              return op === '+' ? baseHue + shift.value : baseHue - shift.value;
+            }
+          }
+          return parseFloat(str);
+        };
+        const l = parseChannel(lStr, baseOklch.l, 'l');
+        const c = parseChannel(cStr, baseOklch.c, 'c');
+        const h = parseHue(hStr, baseOklch.h ?? 0);
+        const rgb = clampRgb(
+          toRGB({ mode: 'oklch', l, c, h, alpha: base.value.a ?? 1 })
+        );
+        result[name] = {
+          type: 'COLOR',
+          value: { r: rgb.r, g: rgb.g, b: rgb.b, a: rgb.alpha ?? 1 },
+          description
+        };
+        continue;
+      }
     }
 
     const color = parse(valueStr);

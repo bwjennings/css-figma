@@ -4532,11 +4532,12 @@
         return idx === -1 ? "" : figmaName.slice(0, idx);
       }
       function parseCssVariables(css) {
-        var _a;
+        var _a, _b, _c, _d;
         const result = {};
         const re = /--([a-zA-Z0-9\-_]+)\s*:\s*([^;]+);(?:[ \t]*\/\*([^]*?)\*\/)?/g;
         let m;
         const toRGB = converter_default("rgb");
+        const toOKLCH = converter_default("oklch");
         while ((m = re.exec(css)) !== null) {
           const name = m[1];
           const valueStr = m[2].trim();
@@ -4563,12 +4564,55 @@
             result[name] = { type: "FLOAT", value: num3, description };
             continue;
           }
+          const relativeMatch = valueStr.match(
+            /^oklch\(from\s+var\(--([\w-]+)\)\s+([^\s]+)\s+([^\s]+)\s+(.+)\)$/
+          );
+          if (relativeMatch) {
+            const baseName = relativeMatch[1];
+            const lStr = relativeMatch[2];
+            const cStr = relativeMatch[3];
+            const hStr = relativeMatch[4];
+            const base = result[baseName];
+            if (base && base.type === "COLOR") {
+              const baseOklch = toOKLCH(__spreadProps(__spreadValues({}, base.value), { alpha: base.value.a }));
+              const parseChannel = (str, baseVal, letter) => {
+                if (str === letter) return baseVal;
+                if (str.endsWith("%")) return parseFloat(str) / 100;
+                return parseFloat(str);
+              };
+              const parseHue = (str, baseHue) => {
+                if (str === "h") return baseHue;
+                const calc = str.match(/^calc\(h\s*([+\-])\s*var\(--([\w-]+)\)\)$/);
+                if (calc) {
+                  const op = calc[1];
+                  const varName = calc[2];
+                  const shift = result[varName];
+                  if (shift && shift.type === "FLOAT") {
+                    return op === "+" ? baseHue + shift.value : baseHue - shift.value;
+                  }
+                }
+                return parseFloat(str);
+              };
+              const l = parseChannel(lStr, baseOklch.l, "l");
+              const c2 = parseChannel(cStr, baseOklch.c, "c");
+              const h = parseHue(hStr, (_a = baseOklch.h) != null ? _a : 0);
+              const rgb3 = clampRgb(
+                toRGB({ mode: "oklch", l, c: c2, h, alpha: (_b = base.value.a) != null ? _b : 1 })
+              );
+              result[name] = {
+                type: "COLOR",
+                value: { r: rgb3.r, g: rgb3.g, b: rgb3.b, a: (_c = rgb3.alpha) != null ? _c : 1 },
+                description
+              };
+              continue;
+            }
+          }
           const color = parse_default(valueStr);
           if (color) {
             const rgb3 = clampRgb(toRGB(color));
             result[name] = {
               type: "COLOR",
-              value: { r: rgb3.r, g: rgb3.g, b: rgb3.b, a: (_a = rgb3.alpha) != null ? _a : 1 },
+              value: { r: rgb3.r, g: rgb3.g, b: rgb3.b, a: (_d = rgb3.alpha) != null ? _d : 1 },
               description
             };
             continue;
