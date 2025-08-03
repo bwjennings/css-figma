@@ -21,7 +21,7 @@
     .container {
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
+      height: 100vh;
       background: var(--figma-color-bg);
     }
     .input-section {
@@ -155,7 +155,7 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container flex">
     <div class="input-section">
       <textarea class="css-input-box" id="cssInput" placeholder="--primary: #ff0000;\n--spacing: 8px;"></textarea>
       <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px;">
