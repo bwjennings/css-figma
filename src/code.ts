@@ -152,6 +152,8 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
       const unit = unitMatch[2].toLowerCase();
       if (unit === 'rem') {
         num *= 16;
+      } else if (unit === '%') {
+        num /= 100;
       }
       result[name] = { type: 'FLOAT', value: num, description };
       continue;
@@ -174,7 +176,18 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
         });
         const parseChannel = (str: string, baseVal: number, letter: string): number => {
           if (str === letter) return baseVal;
-          if (str.endsWith('%')) return parseFloat(str) / 100;
+          const chromaMax = 0.4;
+          const varMatch = str.match(/^var\(--([\w-]+)\)$/);
+          if (varMatch) {
+            const v = result[varMatch[1]];
+            if (v && v.type === 'FLOAT') {
+              return letter === 'c' ? v.value * chromaMax : v.value;
+            }
+          }
+          if (str.endsWith('%')) {
+            const p = parseFloat(str) / 100;
+            return letter === 'c' ? p * chromaMax : p;
+          }
           return parseFloat(str);
         };
         const parseHue = (str: string, baseHue: number): number => {
@@ -196,6 +209,27 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
         const rgb = clampRgb(
           toRGB({ mode: 'oklch', l, c, h, alpha: base.value.a ?? 1 })
         );
+        result[name] = {
+          type: 'COLOR',
+          value: { r: rgb.r, g: rgb.g, b: rgb.b, a: rgb.alpha ?? 1 },
+          description
+        };
+        continue;
+      }
+    }
+
+    const hueVarMatch = valueStr.match(/^oklch\(([^\s]+)\s+([^\s]+)\s+var\(--([\w-]+)\)\)$/);
+    if (hueVarMatch) {
+      const l = hueVarMatch[1].endsWith('%')
+        ? parseFloat(hueVarMatch[1]) / 100
+        : parseFloat(hueVarMatch[1]);
+      const cRaw = hueVarMatch[2];
+      const c = cRaw.endsWith('%')
+        ? (parseFloat(cRaw) / 100) * 0.4
+        : parseFloat(cRaw);
+      const hueVar = result[hueVarMatch[3]];
+      if (hueVar && hueVar.type === 'FLOAT') {
+        const rgb = clampRgb(toRGB({ mode: 'oklch', l, c, h: hueVar.value }));
         result[name] = {
           type: 'COLOR',
           value: { r: rgb.r, g: rgb.g, b: rgb.b, a: rgb.alpha ?? 1 },
