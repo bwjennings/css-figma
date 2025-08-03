@@ -167,7 +167,11 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
       const hStr = relativeMatch[4];
       const base = result[baseName];
       if (base && base.type === 'COLOR') {
-        const baseOklch = toOKLCH({ ...base.value, alpha: base.value.a });
+        const baseOklch = toOKLCH({
+          mode: 'rgb',
+          ...base.value,
+          alpha: base.value.a
+        });
         const parseChannel = (str: string, baseVal: number, letter: string): number => {
           if (str === letter) return baseVal;
           if (str.endsWith('%')) return parseFloat(str) / 100;
