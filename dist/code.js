@@ -4532,7 +4532,7 @@
         return idx === -1 ? "" : figmaName.slice(0, idx);
       }
       function parseCssVariables(css) {
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e;
         const result = {};
         const re = /--([a-zA-Z0-9\-_]+)\s*:\s*([^;]+);(?:[ \t]*\/\*([^]*?)\*\/)?/g;
         let m;
@@ -4560,6 +4560,8 @@
             const unit = unitMatch[2].toLowerCase();
             if (unit === "rem") {
               num3 *= 16;
+            } else if (unit === "%") {
+              num3 /= 100;
             }
             result[name] = { type: "FLOAT", value: num3, description };
             continue;
@@ -4581,7 +4583,18 @@
               }));
               const parseChannel = (str, baseVal, letter) => {
                 if (str === letter) return baseVal;
-                if (str.endsWith("%")) return parseFloat(str) / 100;
+                const chromaMax = 0.4;
+                const varMatch = str.match(/^var\(--([\w-]+)\)$/);
+                if (varMatch) {
+                  const v = result[varMatch[1]];
+                  if (v && v.type === "FLOAT") {
+                    return letter === "c" ? v.value * chromaMax : v.value;
+                  }
+                }
+                if (str.endsWith("%")) {
+                  const p4 = parseFloat(str) / 100;
+                  return letter === "c" ? p4 * chromaMax : p4;
+                }
                 return parseFloat(str);
               };
               const parseHue = (str, baseHue) => {
@@ -4611,12 +4624,28 @@
               continue;
             }
           }
+          const hueVarMatch = valueStr.match(/^oklch\(([^\s]+)\s+([^\s]+)\s+var\(--([\w-]+)\)\)$/);
+          if (hueVarMatch) {
+            const l = hueVarMatch[1].endsWith("%") ? parseFloat(hueVarMatch[1]) / 100 : parseFloat(hueVarMatch[1]);
+            const cRaw = hueVarMatch[2];
+            const c2 = cRaw.endsWith("%") ? parseFloat(cRaw) / 100 * 0.4 : parseFloat(cRaw);
+            const hueVar = result[hueVarMatch[3]];
+            if (hueVar && hueVar.type === "FLOAT") {
+              const rgb3 = clampRgb(toRGB({ mode: "oklch", l, c: c2, h: hueVar.value }));
+              result[name] = {
+                type: "COLOR",
+                value: { r: rgb3.r, g: rgb3.g, b: rgb3.b, a: (_d = rgb3.alpha) != null ? _d : 1 },
+                description
+              };
+              continue;
+            }
+          }
           const color = parse_default(valueStr);
           if (color) {
             const rgb3 = clampRgb(toRGB(color));
             result[name] = {
               type: "COLOR",
-              value: { r: rgb3.r, g: rgb3.g, b: rgb3.b, a: (_d = rgb3.alpha) != null ? _d : 1 },
+              value: { r: rgb3.r, g: rgb3.g, b: rgb3.b, a: (_e = rgb3.alpha) != null ? _e : 1 },
               description
             };
             continue;
