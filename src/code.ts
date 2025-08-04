@@ -122,7 +122,43 @@ function getGroup(name: string): string {
   return idx === -1 ? '' : figmaName.slice(0, idx);
 }
 
-function parseCssVariables(css: string): Record<string, ParsedVar> {
+function buildExistingVarMap(vars: Variable[]): Record<string, ParsedVar> {
+  const idMap = new Map<string, Variable>();
+  for (const v of vars) {
+    idMap.set(v.id, v);
+  }
+
+  const resolveValue = (v: Variable): any => {
+    let val = Object.values(v.valuesByMode)[0];
+    while (val && typeof val === 'object' && 'type' in val && val.type === 'VARIABLE_ALIAS') {
+      const target = idMap.get(val.id);
+      if (!target) return undefined;
+      val = Object.values(target.valuesByMode)[0];
+    }
+    return val;
+  };
+
+  const result: Record<string, ParsedVar> = {};
+  for (const v of vars) {
+    const cssName = toCssName(v.name);
+    const value = resolveValue(v);
+    if (value === undefined) continue;
+    if (v.resolvedType === 'COLOR') {
+      result[cssName] = {
+        type: 'COLOR',
+        value: { r: value.r, g: value.g, b: value.b, a: value.a ?? 1 }
+      };
+    } else if (v.resolvedType === 'FLOAT' && typeof value === 'number') {
+      result[cssName] = { type: 'FLOAT', value };
+    }
+  }
+  return result;
+}
+
+function parseCssVariables(
+  css: string,
+  existing?: Record<string, ParsedVar>
+): Record<string, ParsedVar> {
   const result: Record<string, ParsedVar> = {};
   const re = /--([a-zA-Z0-9\-_]+)\s*:\s*([^;]+);(?:[ \t]*\/\*([^]*?)\*\/)?/g;
   let m: RegExpExecArray | null;
@@ -167,7 +203,7 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
       const lStr = relativeMatch[2];
       const cStr = relativeMatch[3];
       const hStr = relativeMatch[4];
-      const base = result[baseName];
+      const base = result[baseName] || existing?.[baseName];
       if (base && base.type === 'COLOR') {
         const baseOklch = toOKLCH({
           mode: 'rgb',
@@ -179,7 +215,7 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
           const chromaMax = 0.4;
           const varMatch = str.match(/^var\(--([\w-]+)\)$/);
           if (varMatch) {
-            const v = result[varMatch[1]];
+            const v = result[varMatch[1]] || existing?.[varMatch[1]];
             if (v && v.type === 'FLOAT') {
               return letter === 'c' ? v.value * chromaMax : v.value;
             }
@@ -196,7 +232,7 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
           if (calc) {
             const op = calc[1];
             const varName = calc[2];
-            const shift = result[varName];
+            const shift = result[varName] || existing?.[varName];
             if (shift && shift.type === 'FLOAT') {
               return op === '+' ? baseHue + shift.value : baseHue - shift.value;
             }
@@ -227,7 +263,7 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
       const c = cRaw.endsWith('%')
         ? (parseFloat(cRaw) / 100) * 0.4
         : parseFloat(cRaw);
-      const hueVar = result[hueVarMatch[3]];
+      const hueVar = result[hueVarMatch[3]] || existing?.[hueVarMatch[3]];
       if (hueVar && hueVar.type === 'FLOAT') {
         const rgb = clampRgb(toRGB({ mode: 'oklch', l, c, h: hueVar.value }));
         result[name] = {
@@ -255,7 +291,10 @@ function parseCssVariables(css: string): Record<string, ParsedVar> {
 
 figma.ui.onmessage = async (msg) => {
   if (msg.type === 'preview-css') {
-    const vars = parseCssVariables(msg.css as string);
+    const existingVars = buildExistingVarMap(
+      await figma.variables.getLocalVariablesAsync()
+    );
+    const vars = parseCssVariables(msg.css as string, existingVars);
     const preview = Object.entries(vars).map(([name, data]) => ({
       name,
       type: data.type,
@@ -267,7 +306,9 @@ figma.ui.onmessage = async (msg) => {
     return;
   }
   if (msg.type === 'import-css') {
-    const vars = parseCssVariables(msg.css as string);
+    const allVars = await figma.variables.getLocalVariablesAsync();
+    const existingVars = buildExistingVarMap(allVars);
+    const vars = parseCssVariables(msg.css as string, existingVars);
     const collectionName = msg.collectionName as string;
     const itemScopes = msg.itemScopes as Record<string, VariableScope[] | undefined> | undefined;
     const groupScopes = msg.groupScopes as Record<string, VariableScope[] | undefined> | undefined;
@@ -287,7 +328,6 @@ figma.ui.onmessage = async (msg) => {
       }
       return detectVariableScopes(name);
     };
-    const allVars = await figma.variables.getLocalVariablesAsync();
     const nameMap = new Map<string, Variable>();
     for (const v of allVars) {
       nameMap.set(v.name, v);
