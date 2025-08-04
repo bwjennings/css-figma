@@ -2,6 +2,8 @@
 
 This plugin allows you to paste CSS variable definitions and automatically create Figma variables in your file. Both color values (including all CSS color functions, even relative color syntax such as `oklch(from var(--base) 0.9 0.1 h)`) and numeric values are supported. Values with units are imported as numbers, with `rem` values converted to pixels (16px per `1rem`).
 
+Variables using the `light-dark()` CSS function will create separate "light" and "dark" mode values in Figma.
+
 ## Development
 
 1. Install dependencies:
