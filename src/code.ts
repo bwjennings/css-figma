@@ -1,7 +1,13 @@
 import { parse, converter, clampRgb } from 'culori';
 
 // Helper to parse CSS variable definitions
-type ParsedVar = { type: 'COLOR' | 'FLOAT' | 'ALIAS'; value: any; description?: string };
+type ParsedModeValue = { color?: { r: number; g: number; b: number; a: number }; alias?: string };
+type ParsedVar = {
+  type: 'COLOR' | 'FLOAT' | 'ALIAS';
+  value: any;
+  modes?: Record<string, ParsedModeValue>;
+  description?: string;
+};
 
 const VARIABLE_SCOPES: VariableScope[] = [
   'TEXT_CONTENT',
@@ -164,6 +170,90 @@ function parseCssVariables(
   let m: RegExpExecArray | null;
   const toRGB = converter('rgb');
   const toOKLCH = converter('oklch');
+  const parseColorPart = (str: string): ParsedModeValue => {
+    const aliasMatch = str.match(/^var\(--([a-zA-Z0-9\-_]+)\)$/);
+    if (aliasMatch) {
+      const aliasName = aliasMatch[1];
+      const target = result[aliasName] || existing?.[aliasName];
+      let color;
+      if (target && target.type === 'COLOR') {
+        color = target.value;
+      }
+      return { alias: aliasName, color };
+    }
+    const relativeMatch = str.match(
+      /^oklch\(from\s+var\(--([\w-]+)\)\s+([^\s]+)\s+([^\s]+)\s+(.+)\)$/
+    );
+    if (relativeMatch) {
+      const baseName = relativeMatch[1];
+      const lStr = relativeMatch[2];
+      const cStr = relativeMatch[3];
+      const hStr = relativeMatch[4];
+      const base = result[baseName] || existing?.[baseName];
+      if (base && base.type === 'COLOR') {
+        const baseOklch = toOKLCH({
+          mode: 'rgb',
+          ...base.value,
+          alpha: base.value.a
+        });
+        const parseChannel = (str: string, baseVal: number, letter: string): number => {
+          if (str === letter) return baseVal;
+          const chromaMax = 0.4;
+          const varMatch = str.match(/^var\(--([\w-]+)\)$/);
+          if (varMatch) {
+            const v = result[varMatch[1]] || existing?.[varMatch[1]];
+            if (v && v.type === 'FLOAT') {
+              return letter === 'c' ? v.value * chromaMax : v.value;
+            }
+          }
+          if (str.endsWith('%')) {
+            const p = parseFloat(str) / 100;
+            return letter === 'c' ? p * chromaMax : p;
+          }
+          return parseFloat(str);
+        };
+        const parseHue = (str: string, baseHue: number): number => {
+          if (str === 'h') return baseHue;
+          const calc = str.match(/^calc\(h\s*([+\-])\s*var\(--([\w-]+)\)\)$/);
+          if (calc) {
+            const op = calc[1];
+            const varName = calc[2];
+            const shift = result[varName] || existing?.[varName];
+            if (shift && shift.type === 'FLOAT') {
+              return op === '+' ? baseHue + shift.value : baseHue - shift.value;
+            }
+          }
+          return parseFloat(str);
+        };
+        const l = parseChannel(lStr, baseOklch.l, 'l');
+        const c = parseChannel(cStr, baseOklch.c, 'c');
+        const h = parseHue(hStr, baseOklch.h ?? 0);
+        const rgb = clampRgb(toRGB({ mode: 'oklch', l, c, h, alpha: base.value.a ?? 1 }));
+        return { color: { r: rgb.r, g: rgb.g, b: rgb.b, a: rgb.alpha ?? 1 } };
+      }
+    }
+    const hueVarMatch = str.match(/^oklch\(([^\s]+)\s+([^\s]+)\s+var\(--([\w-]+)\)\)$/);
+    if (hueVarMatch) {
+      const l = hueVarMatch[1].endsWith('%')
+        ? parseFloat(hueVarMatch[1]) / 100
+        : parseFloat(hueVarMatch[1]);
+      const cRaw = hueVarMatch[2];
+      const c = cRaw.endsWith('%')
+        ? (parseFloat(cRaw) / 100) * 0.4
+        : parseFloat(cRaw);
+      const hueVar = result[hueVarMatch[3]] || existing?.[hueVarMatch[3]];
+      if (hueVar && hueVar.type === 'FLOAT') {
+        const rgb = clampRgb(toRGB({ mode: 'oklch', l, c, h: hueVar.value }));
+        return { color: { r: rgb.r, g: rgb.g, b: rgb.b, a: rgb.alpha ?? 1 } };
+      }
+    }
+    const color = parse(str);
+    if (color) {
+      const rgb = clampRgb(toRGB(color));
+      return { color: { r: rgb.r, g: rgb.g, b: rgb.b, a: rgb.alpha ?? 1 } };
+    }
+    return {};
+  };
   while ((m = re.exec(css)) !== null) {
     const name = m[1];
     const valueStr = m[2].trim();
@@ -193,6 +283,34 @@ function parseCssVariables(
       }
       result[name] = { type: 'FLOAT', value: num, description };
       continue;
+    }
+
+    if (valueStr.startsWith('light-dark(') && valueStr.endsWith(')')) {
+      const inner = valueStr.slice(11, -1);
+      let depth = 0;
+      let split = -1;
+      for (let i = 0; i < inner.length; i++) {
+        const ch = inner[i];
+        if (ch === '(') depth++;
+        else if (ch === ')') depth--;
+        else if (ch === ',' && depth === 0) {
+          split = i;
+          break;
+        }
+      }
+      if (split !== -1) {
+        const lightStr = inner.slice(0, split).trim();
+        const darkStr = inner.slice(split + 1).trim();
+        const lightVal = parseColorPart(lightStr);
+        const darkVal = parseColorPart(darkStr);
+        result[name] = {
+          type: 'COLOR',
+          value: lightVal.color || darkVal.color,
+          modes: { light: lightVal, dark: darkVal },
+          description
+        };
+        continue;
+      }
     }
 
     const relativeMatch = valueStr.match(
@@ -316,7 +434,29 @@ figma.ui.onmessage = async (msg) => {
     if (!collection) {
       collection = figma.variables.createVariableCollection(collectionName);
     }
-    const modeId = collection.modes[0].modeId;
+    let modeId = collection.modes[0].modeId;
+    let lightModeId = modeId;
+    let darkModeId: string | undefined;
+    if (Object.values(vars).some(v => v.modes)) {
+      const findMode = (name: string) =>
+        collection!.modes.find(m => m.name.toLowerCase() === name);
+      let lightMode = findMode('light');
+      let darkMode = findMode('dark');
+      if (!lightMode) {
+        if (collection!.modes.length === 1) {
+          lightMode = collection!.modes[0];
+          lightMode.name = 'light';
+        } else {
+          lightMode = collection!.addMode('light');
+        }
+      }
+      if (!darkMode) {
+        darkMode = collection!.addMode('dark');
+      }
+      lightModeId = lightMode.modeId;
+      darkModeId = darkMode.modeId;
+      modeId = lightModeId;
+    }
 
     const getScopesForName = (name: string): VariableScope[] => {
       if (itemScopes && itemScopes[name] && itemScopes[name]!.length) {
@@ -342,6 +482,22 @@ figma.ui.onmessage = async (msg) => {
     const created: Record<string, Variable> = {};
     let added = 0;
     let updated = 0;
+    const modeAliasEntries: { variable: Variable; modeId: string; target: string }[] = [];
+
+    const applyModeValue = (variable: Variable, mId: string, val?: ParsedModeValue) => {
+      if (!val) return;
+      if (val.alias) {
+        const target = nameMap.get(val.alias);
+        if (target) {
+          const alias = figma.variables.createVariableAlias(target);
+          variable.setValueForMode(mId, alias);
+        } else {
+          modeAliasEntries.push({ variable, modeId: mId, target: val.alias });
+        }
+      } else if (val.color) {
+        variable.setValueForMode(mId, val.color);
+      }
+    };
 
     // First, handle non-alias variables
     for (const [cssName, data] of Object.entries(vars)) {
@@ -358,7 +514,12 @@ figma.ui.onmessage = async (msg) => {
       } else {
         updated++;
       }
-      variable.setValueForMode(modeId, data.value);
+      if (data.modes) {
+        applyModeValue(variable, lightModeId, data.modes.light);
+        if (darkModeId) applyModeValue(variable, darkModeId, data.modes.dark);
+      } else {
+        variable.setValueForMode(modeId, data.value);
+      }
       variable.setVariableCodeSyntax('WEB', `var(--${cssName})`);
       if (data.description) {
         variable.description = data.description;
@@ -408,6 +569,14 @@ figma.ui.onmessage = async (msg) => {
       }
       aliasEntries = remaining;
       generations--;
+    }
+
+    for (const entry of modeAliasEntries) {
+      const target = nameMap.get(entry.target);
+      if (target) {
+        const alias = figma.variables.createVariableAlias(target);
+        entry.variable.setValueForMode(entry.modeId, alias);
+      }
     }
 
     let message = '';
