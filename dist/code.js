@@ -4495,11 +4495,14 @@
         return scopes.filter((s) => allowed.includes(s));
       }
       async function getAllLocalVariables() {
+        if (!figma.variables || typeof figma.variables.getLocalVariableCollections !== "function" || typeof figma.variables.getLocalVariablesForCollectionAsync !== "function") {
+          return [];
+        }
         const collections = figma.variables.getLocalVariableCollections();
         const perCollection = await Promise.all(
-          collections.map((c2) => figma.variables.getLocalVariablesForCollectionAsync(c2))
+          Array.isArray(collections) ? collections.map((c2) => figma.variables.getLocalVariablesForCollectionAsync(c2)) : []
         );
-        return perCollection.flat();
+        return [].concat(...perCollection);
       }
       figma.showUI(__html__, { themeColors: true, width: 900, height: 600 });
       figma.ui.postMessage({
