@@ -4542,7 +4542,7 @@
         return idx === -1 ? "" : figmaName.slice(0, idx);
       }
       function buildExistingVarMap(vars) {
-        var _a;
+        var _a, _b;
         const idMap = /* @__PURE__ */ new Map();
         for (const v of vars) {
           idMap.set(v.id, v);
@@ -4573,6 +4573,21 @@
           if (entry) {
             result[cssName] = entry;
             result[cssName.toLowerCase()] = entry;
+            const lastSeg = cssName.split("-").pop();
+            if (lastSeg && !result[lastSeg]) result[lastSeg] = entry;
+            if (lastSeg && !result[lastSeg.toLowerCase()])
+              result[lastSeg.toLowerCase()] = entry;
+            const css = (_b = v.codeSyntax) == null ? void 0 : _b.WEB;
+            const match = css == null ? void 0 : css.match(/^var\(--([a-zA-Z0-9\-_]+)\)$/);
+            if (match) {
+              const alias = match[1];
+              result[alias] = entry;
+              result[alias.toLowerCase()] = entry;
+              const aliasLast = alias.split("-").pop();
+              if (aliasLast && !result[aliasLast]) result[aliasLast] = entry;
+              if (aliasLast && !result[aliasLast.toLowerCase()])
+                result[aliasLast.toLowerCase()] = entry;
+            }
           }
         }
         return result;
@@ -4908,11 +4923,21 @@
             const cssKey = toCssName(v.name);
             nameMap.set(cssKey, v);
             nameMap.set(cssKey.toLowerCase(), v);
+            const lastSeg = cssKey.split("-").pop();
+            if (lastSeg) {
+              nameMap.set(lastSeg, v);
+              nameMap.set(lastSeg.toLowerCase(), v);
+            }
             const css = (_a = v.codeSyntax) == null ? void 0 : _a.WEB;
             const match = css == null ? void 0 : css.match(/^var\(--([a-zA-Z0-9\-_]+)\)$/);
             if (match) {
               nameMap.set(match[1], v);
               nameMap.set(match[1].toLowerCase(), v);
+              const aliasLast = match[1].split("-").pop();
+              if (aliasLast) {
+                nameMap.set(aliasLast, v);
+                nameMap.set(aliasLast.toLowerCase(), v);
+              }
             }
           }
           const created = {};

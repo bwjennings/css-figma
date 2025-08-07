@@ -176,8 +176,28 @@ function buildExistingVarMap(vars: Variable[]): Record<string, ParsedVar> {
       entry = { type: 'FLOAT', value };
     }
     if (entry) {
+      // Map by full CSS name and its lowercase form
       result[cssName] = entry;
       result[cssName.toLowerCase()] = entry;
+
+      // Also map by the last segment of the CSS name to support shorthand references
+      const lastSeg = cssName.split('-').pop();
+      if (lastSeg && !result[lastSeg]) result[lastSeg] = entry;
+      if (lastSeg && !result[lastSeg.toLowerCase()])
+        result[lastSeg.toLowerCase()] = entry;
+
+      // If a custom code syntax is defined, map that name and its last segment as well
+      const css = v.codeSyntax?.WEB;
+      const match = css?.match(/^var\(--([a-zA-Z0-9\-_]+)\)$/);
+      if (match) {
+        const alias = match[1];
+        result[alias] = entry;
+        result[alias.toLowerCase()] = entry;
+        const aliasLast = alias.split('-').pop();
+        if (aliasLast && !result[aliasLast]) result[aliasLast] = entry;
+        if (aliasLast && !result[aliasLast.toLowerCase()])
+          result[aliasLast.toLowerCase()] = entry;
+      }
     }
   }
   return result;
@@ -531,11 +551,21 @@ figma.ui.onmessage = async (msg) => {
       const cssKey = toCssName(v.name);
       nameMap.set(cssKey, v);
       nameMap.set(cssKey.toLowerCase(), v);
+      const lastSeg = cssKey.split('-').pop();
+      if (lastSeg) {
+        nameMap.set(lastSeg, v);
+        nameMap.set(lastSeg.toLowerCase(), v);
+      }
       const css = v.codeSyntax?.WEB;
       const match = css?.match(/^var\(--([a-zA-Z0-9\-_]+)\)$/);
       if (match) {
         nameMap.set(match[1], v);
         nameMap.set(match[1].toLowerCase(), v);
+        const aliasLast = match[1].split('-').pop();
+        if (aliasLast) {
+          nameMap.set(aliasLast, v);
+          nameMap.set(aliasLast.toLowerCase(), v);
+        }
       }
     }
 
