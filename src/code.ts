@@ -87,11 +87,20 @@ function filterScopesForType(
 }
 
 async function getAllLocalVariables(): Promise<Variable[]> {
+  if (
+    !figma.variables ||
+    typeof figma.variables.getLocalVariableCollections !== 'function' ||
+    typeof figma.variables.getLocalVariablesForCollectionAsync !== 'function'
+  ) {
+    return [];
+  }
   const collections = figma.variables.getLocalVariableCollections();
   const perCollection = await Promise.all(
-    collections.map(c => figma.variables.getLocalVariablesForCollectionAsync(c))
+    Array.isArray(collections)
+      ? collections.map(c => figma.variables.getLocalVariablesForCollectionAsync(c))
+      : []
   );
-  return perCollection.flat();
+  return ([] as Variable[]).concat(...perCollection);
 }
 
 figma.showUI(__html__, { themeColors: true, width: 900, height: 600 });
