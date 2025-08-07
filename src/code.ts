@@ -166,6 +166,14 @@ function parseCssVariables(
   existing?: Record<string, ParsedVar>
 ): Record<string, ParsedVar> {
   const result: Record<string, ParsedVar> = {};
+  const modeBlocks: { mode: string; content: string }[] = [];
+  css = css.replace(
+    /\[data-[\w-]+=(?:"([^"]+)"|'([^']+)')\]\s*\{([^]*?)\}/g,
+    (_full, m1, m2, content) => {
+      modeBlocks.push({ mode: m1 || m2, content });
+      return '';
+    }
+  );
   const re = /--([a-zA-Z0-9\-_]+)\s*:\s*([^;]+);(?:[ \t]*\/\*([^]*?)\*\/)?/g;
   let m: RegExpExecArray | null;
   const toRGB = converter('rgb');
@@ -404,6 +412,26 @@ function parseCssVariables(
       continue;
     }
   }
+
+  for (const block of modeBlocks) {
+    re.lastIndex = 0;
+    while ((m = re.exec(block.content)) !== null) {
+      const name = m[1];
+      const valueStr = m[2].trim();
+      const val = parseColorPart(valueStr);
+      if (!val.color && !val.alias) continue;
+      let entry = result[name];
+      if (!entry) {
+        entry = {
+          type: 'COLOR',
+          value: val.color || { r: 0, g: 0, b: 0, a: 1 }
+        };
+        result[name] = entry;
+      }
+      if (!entry.modes) entry.modes = {};
+      entry.modes[block.mode] = val;
+    }
+  }
   return result;
 }
 
@@ -439,27 +467,28 @@ figma.ui.onmessage = async (msg) => {
       collection = figma.variables.createVariableCollection(collectionName);
     }
     let modeId = collection.modes[0].modeId;
-    let lightModeId = modeId;
-    let darkModeId: string | undefined;
+    const defaultModeId = modeId;
+    const modeIdMap: Record<string, string> = {
+      [collection.modes[0].name.toLowerCase()]: collection.modes[0].modeId
+    };
     if (Object.values(vars).some(v => v.modes)) {
-      const findMode = (name: string) =>
-        collection!.modes.find(m => m.name.toLowerCase() === name);
-      let lightMode = findMode('light');
-      let darkMode = findMode('dark');
-      if (!lightMode) {
-        if (collection!.modes.length === 1) {
-          lightMode = collection!.modes[0];
-          lightMode.name = 'light';
-        } else {
-          lightMode = collection!.addMode('light');
+      const modeNames = new Set<string>();
+      for (const v of Object.values(vars)) {
+        if (v.modes) {
+          for (const name of Object.keys(v.modes)) {
+            modeNames.add(name);
+          }
         }
       }
-      if (!darkMode) {
-        darkMode = collection!.addMode('dark');
+      for (const name of modeNames) {
+        let mode = collection.modes.find(
+          m => m.name.toLowerCase() === name.toLowerCase()
+        );
+        if (!mode) {
+          mode = collection.addMode(name);
+        }
+        modeIdMap[name.toLowerCase()] = mode.modeId;
       }
-      lightModeId = lightMode.modeId;
-      darkModeId = darkMode.modeId;
-      modeId = lightModeId;
     }
 
     const getScopesForName = (name: string): VariableScope[] => {
@@ -519,10 +548,13 @@ figma.ui.onmessage = async (msg) => {
         updated++;
       }
       if (data.modes) {
-        applyModeValue(variable, lightModeId, data.modes.light);
-        if (darkModeId) applyModeValue(variable, darkModeId, data.modes.dark);
+        variable.setValueForMode(defaultModeId, data.value);
+        for (const [mName, mVal] of Object.entries(data.modes)) {
+          const mId = modeIdMap[mName.toLowerCase()];
+          if (mId) applyModeValue(variable, mId, mVal);
+        }
       } else {
-        variable.setValueForMode(modeId, data.value);
+        variable.setValueForMode(defaultModeId, data.value);
       }
       variable.setVariableCodeSyntax('WEB', `var(--${cssName})`);
       if (data.description) {
