@@ -86,7 +86,7 @@ function filterScopesForType(
   return scopes.filter(s => allowed.includes(s));
 }
 
-figma.showUI(__html__, { themeColors: true, width: 400, height: 480 });
+figma.showUI(__html__, { themeColors: true, width: 900, height: 600 });
 figma.ui.postMessage({
   type: 'init',
   collections: figma.variables.getLocalVariableCollections().map(c => c.name),
@@ -408,6 +408,10 @@ function parseCssVariables(
 }
 
 figma.ui.onmessage = async (msg) => {
+  if (msg.type === 'resize') {
+    figma.ui.resize(msg.width, msg.height);
+    return;
+  }
   if (msg.type === 'preview-css') {
     const existingVars = buildExistingVarMap(
       await figma.variables.getLocalVariablesAsync()
