@@ -4561,13 +4561,18 @@
           const cssName = toCssName(v.name);
           const value = resolveValue(v);
           if (value === void 0) continue;
+          let entry;
           if (v.resolvedType === "COLOR") {
-            result[cssName] = {
+            entry = {
               type: "COLOR",
               value: { r: value.r, g: value.g, b: value.b, a: (_a = value.a) != null ? _a : 1 }
             };
           } else if (v.resolvedType === "FLOAT" && typeof value === "number") {
-            result[cssName] = { type: "FLOAT", value };
+            entry = { type: "FLOAT", value };
+          }
+          if (entry) {
+            result[cssName] = entry;
+            result[cssName.toLowerCase()] = entry;
           }
         }
         return result;
@@ -4587,12 +4592,14 @@
         let m;
         const toRGB = converter_default("rgb");
         const toOKLCH = converter_default("oklch");
+        const getExisting = (name) => (existing == null ? void 0 : existing[name]) || (existing == null ? void 0 : existing[name.toLowerCase()]);
+        const getResult = (name) => result[name] || result[name.toLowerCase()];
         const parseColorPart = (str) => {
           var _a2, _b2, _c2, _d2, _e2;
           const aliasMatch = str.match(/^var\(--([a-zA-Z0-9\-_]+)\)$/);
           if (aliasMatch) {
             const aliasName = aliasMatch[1];
-            const target = result[aliasName] || (existing == null ? void 0 : existing[aliasName]);
+            const target = getResult(aliasName) || getExisting(aliasName);
             let color2;
             if (target && target.type === "COLOR") {
               color2 = target.value;
@@ -4607,7 +4614,7 @@
             const lStr = relativeMatch[2];
             const cStr = relativeMatch[3];
             const hStr = relativeMatch[4];
-            const base = result[baseName] || (existing == null ? void 0 : existing[baseName]);
+            const base = getResult(baseName) || getExisting(baseName);
             if (base && base.type === "COLOR") {
               const baseOklch = toOKLCH(__spreadProps(__spreadValues({
                 mode: "rgb"
@@ -4619,7 +4626,7 @@
                 const chromaMax = 0.4;
                 const varMatch = str2.match(/^var\(--([\w-]+)\)$/);
                 if (varMatch) {
-                  const v = result[varMatch[1]] || (existing == null ? void 0 : existing[varMatch[1]]);
+                  const v = getResult(varMatch[1]) || getExisting(varMatch[1]);
                   if (v && v.type === "FLOAT") {
                     return letter === "c" ? v.value * chromaMax : v.value;
                   }
@@ -4636,7 +4643,7 @@
                 if (calc) {
                   const op = calc[1];
                   const varName = calc[2];
-                  const shift = result[varName] || (existing == null ? void 0 : existing[varName]);
+                  const shift = getResult(varName) || getExisting(varName);
                   if (shift && shift.type === "FLOAT") {
                     return op === "+" ? baseHue + shift.value : baseHue - shift.value;
                   }
@@ -4655,7 +4662,7 @@
             const l = hueVarMatch[1].endsWith("%") ? parseFloat(hueVarMatch[1]) / 100 : parseFloat(hueVarMatch[1]);
             const cRaw = hueVarMatch[2];
             const c2 = cRaw.endsWith("%") ? parseFloat(cRaw) / 100 * 0.4 : parseFloat(cRaw);
-            const hueVar = result[hueVarMatch[3]] || (existing == null ? void 0 : existing[hueVarMatch[3]]);
+            const hueVar = getResult(hueVarMatch[3]) || getExisting(hueVarMatch[3]);
             if (hueVar && hueVar.type === "FLOAT") {
               const rgb3 = clampRgb(toRGB({ mode: "oklch", l, c: c2, h: hueVar.value }));
               return { color: { r: rgb3.r, g: rgb3.g, b: rgb3.b, a: (_d2 = rgb3.alpha) != null ? _d2 : 1 } };
@@ -4731,7 +4738,7 @@
             const lStr = relativeMatch[2];
             const cStr = relativeMatch[3];
             const hStr = relativeMatch[4];
-            const base = result[baseName] || (existing == null ? void 0 : existing[baseName]);
+            const base = getResult(baseName) || getExisting(baseName);
             if (base && base.type === "COLOR") {
               const baseOklch = toOKLCH(__spreadProps(__spreadValues({
                 mode: "rgb"
@@ -4743,7 +4750,7 @@
                 const chromaMax = 0.4;
                 const varMatch = str.match(/^var\(--([\w-]+)\)$/);
                 if (varMatch) {
-                  const v = result[varMatch[1]] || (existing == null ? void 0 : existing[varMatch[1]]);
+                  const v = getResult(varMatch[1]) || getExisting(varMatch[1]);
                   if (v && v.type === "FLOAT") {
                     return letter === "c" ? v.value * chromaMax : v.value;
                   }
@@ -4760,7 +4767,7 @@
                 if (calc) {
                   const op = calc[1];
                   const varName = calc[2];
-                  const shift = result[varName] || (existing == null ? void 0 : existing[varName]);
+                  const shift = getResult(varName) || getExisting(varName);
                   if (shift && shift.type === "FLOAT") {
                     return op === "+" ? baseHue + shift.value : baseHue - shift.value;
                   }
@@ -4786,7 +4793,7 @@
             const l = hueVarMatch[1].endsWith("%") ? parseFloat(hueVarMatch[1]) / 100 : parseFloat(hueVarMatch[1]);
             const cRaw = hueVarMatch[2];
             const c2 = cRaw.endsWith("%") ? parseFloat(cRaw) / 100 * 0.4 : parseFloat(cRaw);
-            const hueVar = result[hueVarMatch[3]] || (existing == null ? void 0 : existing[hueVarMatch[3]]);
+            const hueVar = getResult(hueVarMatch[3]) || getExisting(hueVarMatch[3]);
             if (hueVar && hueVar.type === "FLOAT") {
               const rgb3 = clampRgb(toRGB({ mode: "oklch", l, c: c2, h: hueVar.value }));
               result[name] = {
@@ -4896,11 +4903,15 @@
           const nameMap = /* @__PURE__ */ new Map();
           for (const v of allVars) {
             nameMap.set(v.name, v);
-            nameMap.set(toCssName(v.name), v);
+            nameMap.set(v.name.toLowerCase(), v);
+            const cssKey = toCssName(v.name);
+            nameMap.set(cssKey, v);
+            nameMap.set(cssKey.toLowerCase(), v);
             const css = (_a = v.codeSyntax) == null ? void 0 : _a.WEB;
             const match = css == null ? void 0 : css.match(/^var\(--([a-zA-Z0-9\-_]+)\)$/);
             if (match) {
               nameMap.set(match[1], v);
+              nameMap.set(match[1].toLowerCase(), v);
             }
           }
           const created = {};
@@ -4910,7 +4921,7 @@
           const applyModeValue = (variable, mId, val) => {
             if (!val) return;
             if (val.alias) {
-              const target = nameMap.get(val.alias);
+              const target = nameMap.get(val.alias) || nameMap.get(val.alias.toLowerCase());
               if (target) {
                 const alias = figma.variables.createVariableAlias(target);
                 variable.setValueForMode(mId, alias);
@@ -4950,13 +4961,14 @@
             }
             created[cssName] = variable;
             nameMap.set(cssName, variable);
+            nameMap.set(cssName.toLowerCase(), variable);
           }
           let aliasEntries = Object.entries(vars).filter(([, d]) => d.type === "ALIAS");
           let generations = aliasEntries.length;
           while (aliasEntries.length && generations > 0) {
             const remaining = [];
             for (const [cssName, data] of aliasEntries) {
-              const target = nameMap.get(data.value);
+              const target = nameMap.get(data.value) || nameMap.get(data.value.toLowerCase());
               if (target) {
                 const figmaName = toFigmaName(cssName);
                 let variable = collection.variableIds.map((id) => figma.variables.getVariableById(id)).find((v) => v.name === figmaName);
@@ -4978,6 +4990,7 @@
                 }
                 created[cssName] = variable;
                 nameMap.set(cssName, variable);
+                nameMap.set(cssName.toLowerCase(), variable);
               } else {
                 remaining.push([cssName, data]);
               }
@@ -4986,7 +4999,7 @@
             generations--;
           }
           for (const entry of modeAliasEntries) {
-            const target = nameMap.get(entry.target);
+            const target = nameMap.get(entry.target) || nameMap.get(entry.target.toLowerCase());
             if (target) {
               const alias = figma.variables.createVariableAlias(target);
               entry.variable.setValueForMode(entry.modeId, alias);
