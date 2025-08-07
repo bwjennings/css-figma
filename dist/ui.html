@@ -370,7 +370,14 @@
           // Name
           const nameDiv = document.createElement('div');
           nameDiv.className = 'variable-name';
-          nameDiv.textContent = item.name;
+          let displayName = item.name;
+          if (groupName) {
+            const prefix = groupName.replace(/\//g, '-') + '-';
+            if (displayName.startsWith(prefix)) {
+              displayName = displayName.slice(prefix.length);
+            }
+          }
+          nameDiv.textContent = displayName;
           infoDiv.appendChild(nameDiv);
           
           // Description (if any)
