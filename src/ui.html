@@ -195,7 +195,7 @@
     <div class="main-content">
       <div class="left-panel">
         <textarea class="css-input-box" id="cssInput" placeholder="--grey-50: #E7E8E7;&#10;--grey-100: #d7d7d7;&#10;--grey-200: #b9bab9;&#10;--grey-300: #9FA09F;&#10;&#10;&#10;--color-surface-secondary:var(--grey-100);  /* secondary neutral surface        */&#10;--color-surface-tertiary:var(--grey-200);  /* tertiary neutral surface         */&#10;--color-surface-emphasis:var(--grey-300);  /* highest-contrast neutral surface */"></textarea>
-        <div style="display: none; gap: 8px; align-items: center; margin-top: 8px;">
+        <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px;">
           <label for="collectionSelect" style="font-size: 11px; color: var(--figma-color-text-tertiary);">Collection:</label>
           <select id="collectionSelect" style="flex: 1;"></select>
           <input id="newCollection" type="text" placeholder="New collection name" style="display:none; width: 160px; font-size: 11px; margin-left: 8px;" />
@@ -432,6 +432,7 @@
         newOpt.textContent = 'New collection...';
         select.appendChild(newOpt);
         scopes = msg.scopes;
+        newInput.style.display = select.value === '__new__' ? 'block' : 'none';
         updateButtonState();
         
         // Request optimal window size based on content
