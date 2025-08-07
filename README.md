@@ -4,6 +4,16 @@ This plugin allows you to paste CSS variable definitions and automatically creat
 
 Variables using the `light-dark()` CSS function will create separate "light" and "dark" mode values in Figma.
 
+Variables grouped under data attributes like `[data-theme="colorful"]` or `[data-mode="dark"]` create mode values based on the attribute's value. For example:
+
+```css
+[data-theme="colorful"] {
+  --color-action-complementary: #E2E9ED;
+}
+```
+
+This sets `color-action-complementary` for a Figma mode named **colorful**.
+
 ## Development
 
 1. Install dependencies:
