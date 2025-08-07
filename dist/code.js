@@ -4494,6 +4494,13 @@
         if (!allowed) return scopes;
         return scopes.filter((s) => allowed.includes(s));
       }
+      async function getAllLocalVariables() {
+        const collections = figma.variables.getLocalVariableCollections();
+        const perCollection = await Promise.all(
+          collections.map((c2) => figma.variables.getLocalVariablesForCollectionAsync(c2))
+        );
+        return perCollection.flat();
+      }
       figma.showUI(__html__, { themeColors: true, width: 900, height: 600 });
       figma.ui.postMessage({
         type: "init",
@@ -4826,9 +4833,7 @@
           return;
         }
         if (msg.type === "preview-css") {
-          const existingVars = buildExistingVarMap(
-            await figma.variables.getLocalVariablesAsync()
-          );
+          const existingVars = buildExistingVarMap(await getAllLocalVariables());
           const vars = parseCssVariables(msg.css, existingVars);
           const preview = Object.entries(vars).map(([name, data]) => ({
             name,
@@ -4841,7 +4846,7 @@
           return;
         }
         if (msg.type === "import-css") {
-          const allVars = await figma.variables.getLocalVariablesAsync();
+          const allVars = await getAllLocalVariables();
           const existingVars = buildExistingVarMap(allVars);
           const vars = parseCssVariables(msg.css, existingVars);
           const collectionName = msg.collectionName;

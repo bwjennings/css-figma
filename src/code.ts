@@ -86,6 +86,14 @@ function filterScopesForType(
   return scopes.filter(s => allowed.includes(s));
 }
 
+async function getAllLocalVariables(): Promise<Variable[]> {
+  const collections = figma.variables.getLocalVariableCollections();
+  const perCollection = await Promise.all(
+    collections.map(c => figma.variables.getLocalVariablesForCollectionAsync(c))
+  );
+  return perCollection.flat();
+}
+
 figma.showUI(__html__, { themeColors: true, width: 900, height: 600 });
 figma.ui.postMessage({
   type: 'init',
@@ -441,9 +449,7 @@ figma.ui.onmessage = async (msg) => {
     return;
   }
   if (msg.type === 'preview-css') {
-    const existingVars = buildExistingVarMap(
-      await figma.variables.getLocalVariablesAsync()
-    );
+    const existingVars = buildExistingVarMap(await getAllLocalVariables());
     const vars = parseCssVariables(msg.css as string, existingVars);
     const preview = Object.entries(vars).map(([name, data]) => ({
       name,
@@ -456,7 +462,7 @@ figma.ui.onmessage = async (msg) => {
     return;
   }
   if (msg.type === 'import-css') {
-    const allVars = await figma.variables.getLocalVariablesAsync();
+    const allVars = await getAllLocalVariables();
     const existingVars = buildExistingVarMap(allVars);
     const vars = parseCssVariables(msg.css as string, existingVars);
     const collectionName = msg.collectionName as string;
