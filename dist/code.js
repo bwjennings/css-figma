@@ -4868,8 +4868,9 @@
           }
           let modeId = collection.modes[0].modeId;
           const defaultModeId = modeId;
+          const defaultModeName = collection.modes[0].name.toLowerCase();
           const modeIdMap = {
-            [collection.modes[0].name.toLowerCase()]: collection.modes[0].modeId
+            [defaultModeName]: collection.modes[0].modeId
           };
           if (Object.values(vars).some((v) => v.modes)) {
             const modeNames = /* @__PURE__ */ new Set();
@@ -4943,10 +4944,12 @@
               updated++;
             }
             if (data.modes) {
-              variable.setValueForMode(defaultModeId, data.value);
+              const defVal = data.modes[defaultModeName] || (data.value ? { color: data.value } : void 0);
+              applyModeValue(variable, defaultModeId, defVal);
               for (const [mName, mVal] of Object.entries(data.modes)) {
-                const mId = modeIdMap[mName.toLowerCase()];
-                if (mId) applyModeValue(variable, mId, mVal);
+                const key = mName.toLowerCase();
+                const mId = modeIdMap[key];
+                if (mId && key !== defaultModeName) applyModeValue(variable, mId, mVal);
               }
             } else {
               variable.setValueForMode(defaultModeId, data.value);
