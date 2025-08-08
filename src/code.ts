@@ -180,11 +180,14 @@ function buildExistingVarMap(vars: Variable[]): Record<string, ParsedVar> {
       result[cssName] = entry;
       result[cssName.toLowerCase()] = entry;
 
-      // Also map by the last segment of the CSS name to support shorthand references
-      const lastSeg = cssName.split('-').pop();
-      if (lastSeg && !result[lastSeg]) result[lastSeg] = entry;
-      if (lastSeg && !result[lastSeg.toLowerCase()])
-        result[lastSeg.toLowerCase()] = entry;
+      // Also map by any trailing segments of the CSS name to support shorthand references
+      const parts = cssName.split('-');
+      for (let i = 1; i < parts.length; i++) {
+        const suffix = parts.slice(i).join('-');
+        if (!result[suffix]) result[suffix] = entry;
+        const lower = suffix.toLowerCase();
+        if (!result[lower]) result[lower] = entry;
+      }
 
       // If a custom code syntax is defined, map that name and its last segment as well
       const css = v.codeSyntax?.WEB;
@@ -193,10 +196,13 @@ function buildExistingVarMap(vars: Variable[]): Record<string, ParsedVar> {
         const alias = match[1];
         result[alias] = entry;
         result[alias.toLowerCase()] = entry;
-        const aliasLast = alias.split('-').pop();
-        if (aliasLast && !result[aliasLast]) result[aliasLast] = entry;
-        if (aliasLast && !result[aliasLast.toLowerCase()])
-          result[aliasLast.toLowerCase()] = entry;
+        const aliasParts = alias.split('-');
+        for (let i = 1; i < aliasParts.length; i++) {
+          const suffix = aliasParts.slice(i).join('-');
+          if (!result[suffix]) result[suffix] = entry;
+          const lower = suffix.toLowerCase();
+          if (!result[lower]) result[lower] = entry;
+        }
       }
     }
   }
@@ -508,11 +514,10 @@ figma.ui.onmessage = async (msg) => {
     if (!collection) {
       collection = figma.variables.createVariableCollection(collectionName);
     }
-    let modeId = collection.modes[0].modeId;
-    const defaultModeId = modeId;
+    const defaultModeId = collection.modes[0].modeId;
     const defaultModeName = collection.modes[0].name.toLowerCase();
     const modeIdMap: Record<string, string> = {
-      [defaultModeName]: collection.modes[0].modeId
+      [defaultModeName]: defaultModeId
     };
     if (Object.values(vars).some(v => v.modes)) {
       const modeNames = new Set<string>();
@@ -551,20 +556,25 @@ figma.ui.onmessage = async (msg) => {
       const cssKey = toCssName(v.name);
       nameMap.set(cssKey, v);
       nameMap.set(cssKey.toLowerCase(), v);
-      const lastSeg = cssKey.split('-').pop();
-      if (lastSeg) {
-        nameMap.set(lastSeg, v);
-        nameMap.set(lastSeg.toLowerCase(), v);
+      const parts = cssKey.split('-');
+      for (let i = 1; i < parts.length; i++) {
+        const suffix = parts.slice(i).join('-');
+        if (!nameMap.has(suffix)) nameMap.set(suffix, v);
+        const lower = suffix.toLowerCase();
+        if (!nameMap.has(lower)) nameMap.set(lower, v);
       }
       const css = v.codeSyntax?.WEB;
       const match = css?.match(/^var\(--([a-zA-Z0-9\-_]+)\)$/);
       if (match) {
-        nameMap.set(match[1], v);
-        nameMap.set(match[1].toLowerCase(), v);
-        const aliasLast = match[1].split('-').pop();
-        if (aliasLast) {
-          nameMap.set(aliasLast, v);
-          nameMap.set(aliasLast.toLowerCase(), v);
+        const alias = match[1];
+        nameMap.set(alias, v);
+        nameMap.set(alias.toLowerCase(), v);
+        const aliasParts = alias.split('-');
+        for (let i = 1; i < aliasParts.length; i++) {
+          const suffix = aliasParts.slice(i).join('-');
+          if (!nameMap.has(suffix)) nameMap.set(suffix, v);
+          const lower = suffix.toLowerCase();
+          if (!nameMap.has(lower)) nameMap.set(lower, v);
         }
       }
     }
@@ -648,7 +658,9 @@ figma.ui.onmessage = async (msg) => {
             updated++;
           }
           const alias = figma.variables.createVariableAlias(target);
-          variable.setValueForMode(modeId, alias);
+          for (const m of collection!.modes) {
+            variable.setValueForMode(m.modeId, alias);
+          }
           variable.setVariableCodeSyntax('WEB', `var(--${cssName})`);
           if (data.description) {
             variable.description = data.description;

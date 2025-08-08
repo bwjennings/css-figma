@@ -4573,20 +4573,26 @@
           if (entry) {
             result[cssName] = entry;
             result[cssName.toLowerCase()] = entry;
-            const lastSeg = cssName.split("-").pop();
-            if (lastSeg && !result[lastSeg]) result[lastSeg] = entry;
-            if (lastSeg && !result[lastSeg.toLowerCase()])
-              result[lastSeg.toLowerCase()] = entry;
+            const parts = cssName.split("-");
+            for (let i = 1; i < parts.length; i++) {
+              const suffix = parts.slice(i).join("-");
+              if (!result[suffix]) result[suffix] = entry;
+              const lower = suffix.toLowerCase();
+              if (!result[lower]) result[lower] = entry;
+            }
             const css = (_b = v.codeSyntax) == null ? void 0 : _b.WEB;
             const match = css == null ? void 0 : css.match(/^var\(--([a-zA-Z0-9\-_]+)\)$/);
             if (match) {
               const alias = match[1];
               result[alias] = entry;
               result[alias.toLowerCase()] = entry;
-              const aliasLast = alias.split("-").pop();
-              if (aliasLast && !result[aliasLast]) result[aliasLast] = entry;
-              if (aliasLast && !result[aliasLast.toLowerCase()])
-                result[aliasLast.toLowerCase()] = entry;
+              const aliasParts = alias.split("-");
+              for (let i = 1; i < aliasParts.length; i++) {
+                const suffix = aliasParts.slice(i).join("-");
+                if (!result[suffix]) result[suffix] = entry;
+                const lower = suffix.toLowerCase();
+                if (!result[lower]) result[lower] = entry;
+              }
             }
           }
         }
@@ -4881,11 +4887,10 @@
           if (!collection) {
             collection = figma.variables.createVariableCollection(collectionName);
           }
-          let modeId = collection.modes[0].modeId;
-          const defaultModeId = modeId;
+          const defaultModeId = collection.modes[0].modeId;
           const defaultModeName = collection.modes[0].name.toLowerCase();
           const modeIdMap = {
-            [defaultModeName]: collection.modes[0].modeId
+            [defaultModeName]: defaultModeId
           };
           if (Object.values(vars).some((v) => v.modes)) {
             const modeNames = /* @__PURE__ */ new Set();
@@ -4923,20 +4928,25 @@
             const cssKey = toCssName(v.name);
             nameMap.set(cssKey, v);
             nameMap.set(cssKey.toLowerCase(), v);
-            const lastSeg = cssKey.split("-").pop();
-            if (lastSeg) {
-              nameMap.set(lastSeg, v);
-              nameMap.set(lastSeg.toLowerCase(), v);
+            const parts = cssKey.split("-");
+            for (let i = 1; i < parts.length; i++) {
+              const suffix = parts.slice(i).join("-");
+              if (!nameMap.has(suffix)) nameMap.set(suffix, v);
+              const lower = suffix.toLowerCase();
+              if (!nameMap.has(lower)) nameMap.set(lower, v);
             }
             const css = (_a = v.codeSyntax) == null ? void 0 : _a.WEB;
             const match = css == null ? void 0 : css.match(/^var\(--([a-zA-Z0-9\-_]+)\)$/);
             if (match) {
-              nameMap.set(match[1], v);
-              nameMap.set(match[1].toLowerCase(), v);
-              const aliasLast = match[1].split("-").pop();
-              if (aliasLast) {
-                nameMap.set(aliasLast, v);
-                nameMap.set(aliasLast.toLowerCase(), v);
+              const alias = match[1];
+              nameMap.set(alias, v);
+              nameMap.set(alias.toLowerCase(), v);
+              const aliasParts = alias.split("-");
+              for (let i = 1; i < aliasParts.length; i++) {
+                const suffix = aliasParts.slice(i).join("-");
+                if (!nameMap.has(suffix)) nameMap.set(suffix, v);
+                const lower = suffix.toLowerCase();
+                if (!nameMap.has(lower)) nameMap.set(lower, v);
               }
             }
           }
@@ -5007,7 +5017,9 @@
                   updated++;
                 }
                 const alias = figma.variables.createVariableAlias(target);
-                variable.setValueForMode(modeId, alias);
+                for (const m of collection.modes) {
+                  variable.setValueForMode(m.modeId, alias);
+                }
                 variable.setVariableCodeSyntax("WEB", `var(--${cssName})`);
                 if (data.description) {
                   variable.description = data.description;
