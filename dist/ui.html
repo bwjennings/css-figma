@@ -73,8 +73,8 @@
       background: var(--figma-color-bg);
       min-height: 48px;
     }
-    .group-scope {
-      display: flex;
+    .group-scope, .row-scope {
+      display: inline-flex;
       align-items: center;
       background: var(--figma-color-bg);
       border: 1px solid var(--figma-color-border);
@@ -83,6 +83,148 @@
       font-size: 11px;
       color: var(--figma-color-text-secondary);
       gap: 4px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .group-scope:hover, .row-scope:hover {
+      background: var(--figma-color-bg-hover);
+    }
+    .row-scope {
+      margin-left: 8px;
+      font-size: 10px;
+      padding: 1px 5px;
+    }
+    .scope-popover {
+      position: absolute;
+      z-index: 10;
+      background: var(--figma-color-bg);
+      border: 1px solid var(--figma-color-border);
+      border-radius: var(--border-radius-md);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      padding: 8px;
+      min-width: 180px;
+    }
+    .scope-popover label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 4px;
+      font-size: 11px;
+      color: var(--figma-color-text);
+      cursor: pointer;
+      border-radius: 3px;
+    }
+    .scope-popover label:hover {
+      background: var(--figma-color-bg-hover);
+    }
+    .scope-popover input[type=checkbox] {
+      margin: 0;
+    }
+    .scope-popover-divider {
+      border-top: 1px solid var(--figma-color-border);
+      margin: 4px 0;
+    }
+    .warnings-callout {
+      background: var(--figma-color-bg-warning-tertiary, #FFF6E5);
+      color: var(--figma-color-text-warning, #8A6116);
+      border: 1px solid var(--figma-color-border-warning, #FFC773);
+      border-radius: var(--border-radius-md);
+      padding: 8px 12px;
+      font-size: 11px;
+      margin: 0 0 12px 0;
+      cursor: pointer;
+    }
+    .warnings-callout .warnings-summary {
+      font-weight: 600;
+    }
+    .warnings-callout .warnings-list {
+      margin-top: 8px;
+      display: none;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+    .warnings-callout.open .warnings-list {
+      display: block;
+    }
+    .warnings-list .warning-name {
+      color: var(--figma-color-text-warning, #8A6116);
+      font-weight: 600;
+    }
+    .stats-strip {
+      display: flex;
+      gap: 12px;
+      font-size: 11px;
+      color: var(--figma-color-text-tertiary);
+      padding: 0 0 12px 0;
+      flex-wrap: wrap;
+    }
+    .stats-strip .stat-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .mode-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+    .mode-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: var(--figma-color-text-tertiary);
+      background: var(--figma-color-bg-secondary);
+      border-radius: var(--border-radius-sm);
+      padding: 2px 5px;
+      max-width: 140px;
+    }
+    .mode-pill .mode-name {
+      font-weight: 600;
+      color: var(--figma-color-text-secondary);
+    }
+    .mode-pill .mode-swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      border: 1px solid var(--figma-color-border);
+      background-image:
+        linear-gradient(45deg, #ccc 25%, transparent 25%),
+        linear-gradient(-45deg, #ccc 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #ccc 75%),
+        linear-gradient(-45deg, transparent 75%, #ccc 75%);
+      background-size: 6px 6px;
+      background-position: 0 0, 0 3px, 3px -3px, -3px 0;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .mode-pill .mode-swatch::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--swatch-color, transparent);
+    }
+    .mode-pill .mode-alias {
+      font-style: italic;
+    }
+    .mode-legend {
+      display: flex;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--figma-color-text-tertiary);
+      padding: 0 0 8px 0;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .mode-legend .mode-chip {
+      background: var(--figma-color-bg-secondary);
+      border-radius: 999px;
+      padding: 1px 8px;
+      font-size: 10px;
+      color: var(--figma-color-text-secondary);
     }
     .variable-row {
       display: flex;
@@ -131,10 +273,24 @@
       width: 16px;
       height: 16px;
       border-radius: var(--border-radius-sm);
-      background: var(--figma-color-bg-secondary);
       margin-left: 8px;
       border: 1px solid var(--figma-color-border);
       flex-shrink: 0;
+      background-image:
+        linear-gradient(45deg, #ccc 25%, transparent 25%),
+        linear-gradient(-45deg, #ccc 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #ccc 75%),
+        linear-gradient(-45deg, transparent 75%, #ccc 75%);
+      background-size: 8px 8px;
+      background-position: 0 0, 0 4px, 4px -4px, -4px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .variable-swatch::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--swatch-color, transparent);
     }
     .empty-preview {
       color: var(--figma-color-text-tertiary);
@@ -214,7 +370,6 @@
     const importBtn = document.getElementById('import');
     const select = document.getElementById('collectionSelect');
     const newInput = document.getElementById('newCollection');
-    const previewDiv = document.getElementById('preview');
     let scopes = [];
     const scopeLabels = {
       TEXT_CONTENT: 'Text content',
@@ -261,8 +416,11 @@
       'PARAGRAPH_SPACING',
       'PARAGRAPH_INDENT'
     ];
+    const stringScopes = ['TEXT_CONTENT', 'FONT_FAMILY', 'FONT_STYLE'];
     const itemScopeOverrides = {};
     const groupScopeOverrides = {};
+    let lastPreview = [];
+    let openPopover = null;
 
     function toFigmaName(name) {
       const parts = name.split('-');
@@ -283,50 +441,266 @@
       parent.postMessage({ pluginMessage: { type: 'preview-css', css: textarea.value } }, '*');
     }
 
+    let previewTimer = null;
+    function schedulePreview() {
+      if (previewTimer) clearTimeout(previewTimer);
+      previewTimer = setTimeout(() => {
+        previewTimer = null;
+        sendPreview();
+      }, 180);
+    }
+
     function updateButtonState() {
       let disabled = textarea.value.trim().length === 0;
       if (!disabled && select.value === '__new__') {
         disabled = newInput.value.trim().length === 0;
       }
       importBtn.disabled = disabled;
-      sendPreview();
     }
 
-    textarea.addEventListener('input', updateButtonState);
+    textarea.addEventListener('input', () => {
+      updateButtonState();
+      schedulePreview();
+    });
     newInput.addEventListener('input', updateButtonState);
     select.addEventListener('change', () => {
       newInput.style.display = select.value === '__new__' ? 'block' : 'none';
       updateButtonState();
     });
 
-    function renderScopeSelect(current, allowed) {
-      const sel = document.createElement('select');
-      sel.className = 'scope-select';
-      sel.multiple = true;
-      sel.size = Math.min(4, allowed.length + 1);
-      const none = document.createElement('option');
-      none.value = '';
-      none.textContent = 'Auto';
-      sel.appendChild(none);
-      for (const s of allowed) {
-        const opt = document.createElement('option');
-        opt.value = s;
-        opt.textContent = scopeLabels[s] || s;
-        if (current && current.includes(s)) opt.selected = true;
-        sel.appendChild(opt);
-      }
-      if (!current || current.length === 0) none.selected = true;
-      return sel;
+    function rgbToHex({ r, g, b }) {
+      return `#${Math.round(r*255).toString(16).padStart(2, '0')}${Math.round(g*255).toString(16).padStart(2, '0')}${Math.round(b*255).toString(16).padStart(2, '0')}`.toUpperCase();
+    }
+    function rgbToCss({ r, g, b, a }) {
+      return `rgba(${Math.round(r*255)}, ${Math.round(g*255)}, ${Math.round(b*255)}, ${a ?? 1})`;
+    }
+    function scopeLabel(s) { return scopeLabels[s] || s; }
+    function scopesDisplay(list) {
+      if (!list || list.length === 0) return 'Auto';
+      if (list.length === 1) return scopeLabel(list[0]);
+      return `${list.length} scopes`;
     }
 
-    function renderPreview(items) {
+    function allowedScopesForGroup(arr) {
+      const set = new Set();
+      for (const item of arr) {
+        const buckets =
+          item.type === 'COLOR' ? colorScopes :
+          item.type === 'FLOAT' ? numberScopes :
+          item.type === 'STRING' ? stringScopes :
+          [...colorScopes, ...numberScopes];
+        for (const s of buckets) set.add(s);
+      }
+      return Array.from(set);
+    }
+    function allowedScopesForItem(item) {
+      if (item.type === 'COLOR') return colorScopes;
+      if (item.type === 'FLOAT') return numberScopes;
+      if (item.type === 'STRING') return stringScopes;
+      return [...colorScopes, ...numberScopes];
+    }
+
+    function closePopover() {
+      if (openPopover) {
+        openPopover.remove();
+        openPopover = null;
+        document.removeEventListener('click', onDocClickClose, true);
+      }
+    }
+    function onDocClickClose(e) {
+      if (openPopover && !openPopover.contains(e.target)) {
+        closePopover();
+      }
+    }
+
+    function openScopePopover(anchorEl, current, allowed, onChange) {
+      closePopover();
+      const pop = document.createElement('div');
+      pop.className = 'scope-popover';
+      const selected = new Set(current || []);
+
+      const autoLabel = document.createElement('label');
+      const autoCb = document.createElement('input');
+      autoCb.type = 'checkbox';
+      autoCb.checked = selected.size === 0;
+      autoLabel.appendChild(autoCb);
+      autoLabel.appendChild(document.createTextNode('Auto (detect from name)'));
+      pop.appendChild(autoLabel);
+
+      const divider = document.createElement('div');
+      divider.className = 'scope-popover-divider';
+      pop.appendChild(divider);
+
+      const cbs = [];
+      for (const s of allowed) {
+        const lbl = document.createElement('label');
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.value = s;
+        cb.checked = selected.has(s);
+        cb.addEventListener('change', () => {
+          if (cb.checked) selected.add(s);
+          else selected.delete(s);
+          autoCb.checked = selected.size === 0;
+          onChange(Array.from(selected));
+        });
+        cbs.push(cb);
+        lbl.appendChild(cb);
+        lbl.appendChild(document.createTextNode(scopeLabel(s)));
+        pop.appendChild(lbl);
+      }
+
+      autoCb.addEventListener('change', () => {
+        if (autoCb.checked) {
+          selected.clear();
+          for (const cb of cbs) cb.checked = false;
+          onChange([]);
+        } else if (selected.size === 0) {
+          autoCb.checked = true;
+        }
+      });
+
+      document.body.appendChild(pop);
+      const rect = anchorEl.getBoundingClientRect();
+      const popRect = pop.getBoundingClientRect();
+      let left = rect.left;
+      const maxLeft = window.innerWidth - popRect.width - 8;
+      if (left > maxLeft) left = maxLeft;
+      if (left < 8) left = 8;
+      pop.style.left = `${left}px`;
+      pop.style.top = `${rect.bottom + 4}px`;
+      openPopover = pop;
+      setTimeout(() => document.addEventListener('click', onDocClickClose, true), 0);
+    }
+
+    function effectiveScopesForGroup(groupName, items) {
+      if (groupScopeOverrides[groupName] && groupScopeOverrides[groupName].length) {
+        return groupScopeOverrides[groupName];
+      }
+      const first = items[0]?.scopes || [];
+      return first;
+    }
+    function effectiveScopesForItem(item, groupName) {
+      if (itemScopeOverrides[item.name] && itemScopeOverrides[item.name].length) {
+        return itemScopeOverrides[item.name];
+      }
+      if (groupScopeOverrides[groupName] && groupScopeOverrides[groupName].length) {
+        return groupScopeOverrides[groupName];
+      }
+      return item.scopes || [];
+    }
+
+    function renderModePill(modeName, modeVal) {
+      const pill = document.createElement('span');
+      pill.className = 'mode-pill';
+      const name = document.createElement('span');
+      name.className = 'mode-name';
+      name.textContent = modeName;
+      pill.appendChild(name);
+      if (modeVal.color) {
+        const sw = document.createElement('span');
+        sw.className = 'mode-swatch';
+        sw.style.setProperty('--swatch-color', rgbToCss(modeVal.color));
+        pill.appendChild(sw);
+        const hex = document.createElement('span');
+        hex.textContent = rgbToHex(modeVal.color);
+        pill.appendChild(hex);
+      } else if (modeVal.alias) {
+        const al = document.createElement('span');
+        al.className = 'mode-alias';
+        al.textContent = `→ ${modeVal.alias}`;
+        pill.appendChild(al);
+      }
+      return pill;
+    }
+
+    function renderWarnings(warnings) {
+      if (!warnings || warnings.length === 0) return null;
+      const box = document.createElement('div');
+      box.className = 'warnings-callout';
+      const summary = document.createElement('div');
+      summary.className = 'warnings-summary';
+      summary.textContent = `${warnings.length} declaration${warnings.length === 1 ? '' : 's'} skipped — click to see details`;
+      box.appendChild(summary);
+      const list = document.createElement('div');
+      list.className = 'warnings-list';
+      for (const w of warnings) {
+        const line = document.createElement('div');
+        const name = document.createElement('span');
+        name.className = 'warning-name';
+        name.textContent = `--${w.name}: `;
+        line.appendChild(name);
+        line.appendChild(document.createTextNode(`${w.raw}  —  ${w.reason}`));
+        list.appendChild(line);
+      }
+      box.appendChild(list);
+      box.addEventListener('click', () => box.classList.toggle('open'));
+      return box;
+    }
+
+    function renderStats(items) {
+      const counts = { COLOR: 0, FLOAT: 0, ALIAS: 0 };
+      const modeNames = new Set();
+      for (const item of items) {
+        if (counts[item.type] !== undefined) counts[item.type]++;
+        if (item.modes) {
+          for (const m of Object.keys(item.modes)) modeNames.add(m);
+        }
+      }
+      const strip = document.createElement('div');
+      strip.className = 'stats-strip';
+      const parts = [];
+      if (counts.COLOR) parts.push(`${counts.COLOR} color${counts.COLOR === 1 ? '' : 's'}`);
+      if (counts.FLOAT) parts.push(`${counts.FLOAT} number${counts.FLOAT === 1 ? '' : 's'}`);
+      if (counts.ALIAS) parts.push(`${counts.ALIAS} alias${counts.ALIAS === 1 ? '' : 'es'}`);
+      if (modeNames.size) parts.push(`${modeNames.size} mode${modeNames.size === 1 ? '' : 's'}`);
+      for (const p of parts) {
+        const item = document.createElement('span');
+        item.className = 'stat-item';
+        item.textContent = p;
+        strip.appendChild(item);
+      }
+      return { strip, modeNames };
+    }
+
+    function renderModeLegend(modeNames) {
+      if (modeNames.size === 0) return null;
+      const legend = document.createElement('div');
+      legend.className = 'mode-legend';
+      legend.appendChild(document.createTextNode('Modes detected:'));
+      for (const m of modeNames) {
+        const chip = document.createElement('span');
+        chip.className = 'mode-chip';
+        chip.textContent = m;
+        legend.appendChild(chip);
+      }
+      return legend;
+    }
+
+    function renderPreview(items, warnings) {
+      lastPreview = items || [];
       const previewDiv = document.getElementById('preview');
       previewDiv.innerHTML = '';
       previewDiv.style.display = 'block';
+
+      const warnCallout = renderWarnings(warnings);
+      if (warnCallout) previewDiv.appendChild(warnCallout);
+
       if (!items || items.length === 0) {
-        previewDiv.innerHTML = '<div class="empty-preview">No variables to preview</div>';
+        if (!warnCallout) {
+          const empty = document.createElement('div');
+          empty.className = 'empty-preview';
+          empty.textContent = 'No variables to preview';
+          previewDiv.appendChild(empty);
+        }
         return;
       }
+
+      const { strip, modeNames } = renderStats(items);
+      previewDiv.appendChild(strip);
+      const legend = renderModeLegend(modeNames);
+      if (legend) previewDiv.appendChild(legend);
+
       const groups = {};
       for (const item of items) {
         const g = getGroup(item.name);
@@ -334,41 +708,46 @@
         groups[g].push(item);
       }
       for (const [groupName, arr] of Object.entries(groups)) {
-        // Group label
         const groupDiv = document.createElement('div');
         groupDiv.className = 'group';
-        // Label row
         const labelDiv = document.createElement('div');
         labelDiv.className = 'group-label';
-        labelDiv.textContent = groupName || '(root)';
-        // Scope (show first scope if available)
-        const allowedScopes = [];
-        if (arr.some(i => i.type === 'COLOR')) allowedScopes.push(...colorScopes);
-        if (arr.some(i => i.type !== 'COLOR')) allowedScopes.push(...numberScopes);
+        labelDiv.appendChild(document.createTextNode(groupName || '(root)'));
+
+        const groupAllowed = allowedScopesForGroup(arr);
         const scopeDiv = document.createElement('span');
         scopeDiv.className = 'group-scope';
-        const scopes = arr[0]?.scopes || [];
-        scopeDiv.textContent = scopes.length ? (scopeLabels[scopes[0]] || scopes[0]) : 'All Scopes';
-        
-        // Add dropdown arrow
+        scopeDiv.title = 'Click to override scopes for this group';
+        const scopeText = document.createElement('span');
+        scopeText.textContent = scopesDisplay(effectiveScopesForGroup(groupName, arr));
+        scopeDiv.appendChild(scopeText);
         const arrow = document.createElement('span');
-        arrow.innerHTML = '▼';
+        arrow.textContent = '▾';
         arrow.style.fontSize = '8px';
         arrow.style.opacity = '0.6';
         scopeDiv.appendChild(arrow);
-        
+        scopeDiv.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openScopePopover(
+            scopeDiv,
+            groupScopeOverrides[groupName] || [],
+            groupAllowed,
+            (next) => {
+              if (next.length === 0) delete groupScopeOverrides[groupName];
+              else groupScopeOverrides[groupName] = next;
+              scopeText.textContent = scopesDisplay(effectiveScopesForGroup(groupName, arr));
+            }
+          );
+        });
         labelDiv.appendChild(scopeDiv);
         groupDiv.appendChild(labelDiv);
-        // Variable rows
+
         for (const item of arr) {
           const row = document.createElement('div');
           row.className = 'variable-row';
-          
-          // Info container (name + description)
+
           const infoDiv = document.createElement('div');
           infoDiv.className = 'variable-info';
-          
-          // Name
           const nameDiv = document.createElement('div');
           nameDiv.className = 'variable-name';
           let displayName = item.name;
@@ -380,37 +759,62 @@
           }
           nameDiv.textContent = displayName;
           infoDiv.appendChild(nameDiv);
-          
-          // Description (if any)
           if (item.description && item.description.trim()) {
             const descDiv = document.createElement('div');
             descDiv.className = 'variable-desc';
             descDiv.textContent = item.description;
             infoDiv.appendChild(descDiv);
           }
-          
           row.appendChild(infoDiv);
-          
-          // Value
-          const valueDiv = document.createElement('div');
-          valueDiv.className = 'variable-value';
-          if (item.type === 'COLOR' && item.value) {
-            const { r, g, b, a } = item.value;
-            const hex = `#${Math.round(r*255).toString(16).padStart(2, '0')}${Math.round(g*255).toString(16).padStart(2, '0')}${Math.round(b*255).toString(16).padStart(2, '0')}`.toUpperCase();
-            valueDiv.textContent = hex;
+
+          if (item.modes && Object.keys(item.modes).length) {
+            const modesContainer = document.createElement('div');
+            modesContainer.className = 'mode-pills';
+            for (const [mName, mVal] of Object.entries(item.modes)) {
+              modesContainer.appendChild(renderModePill(mName, mVal));
+            }
+            row.appendChild(modesContainer);
           } else {
-            valueDiv.textContent = item.value;
+            const valueDiv = document.createElement('div');
+            valueDiv.className = 'variable-value';
+            if (item.type === 'COLOR' && item.value) {
+              valueDiv.textContent = rgbToHex(item.value);
+            } else if (item.type === 'ALIAS') {
+              valueDiv.textContent = `→ ${item.value}`;
+            } else {
+              valueDiv.textContent = item.value;
+            }
+            row.appendChild(valueDiv);
+            if (item.type === 'COLOR' && item.value) {
+              const swatch = document.createElement('div');
+              swatch.className = 'variable-swatch';
+              swatch.style.setProperty('--swatch-color', rgbToCss(item.value));
+              row.appendChild(swatch);
+            }
           }
-          row.appendChild(valueDiv);
-          
-          // Swatch for color
-          if (item.type === 'COLOR' && item.value) {
-            const swatch = document.createElement('div');
-            swatch.className = 'variable-swatch';
-            const { r, g, b, a } = item.value;
-            swatch.style.background = `rgba(${Math.round(r*255)}, ${Math.round(g*255)}, ${Math.round(b*255)}, ${a})`;
-            row.appendChild(swatch);
-          }
+
+          const itemAllowed = allowedScopesForItem(item);
+          const rowScope = document.createElement('span');
+          rowScope.className = 'row-scope';
+          rowScope.title = 'Click to override scopes for this variable';
+          const rowScopeText = document.createElement('span');
+          rowScopeText.textContent = scopesDisplay(effectiveScopesForItem(item, groupName));
+          rowScope.appendChild(rowScopeText);
+          rowScope.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openScopePopover(
+              rowScope,
+              itemScopeOverrides[item.name] || [],
+              itemAllowed,
+              (next) => {
+                if (next.length === 0) delete itemScopeOverrides[item.name];
+                else itemScopeOverrides[item.name] = next;
+                rowScopeText.textContent = scopesDisplay(effectiveScopesForItem(item, groupName));
+              }
+            );
+          });
+          row.appendChild(rowScope);
+
           groupDiv.appendChild(row);
         }
         previewDiv.appendChild(groupDiv);
@@ -419,6 +823,7 @@
 
     window.onmessage = (event) => {
       const msg = event.data.pluginMessage;
+      if (!msg) return;
       if (msg.type === 'init') {
         select.innerHTML = '';
         for (const name of msg.collections) {
@@ -434,34 +839,12 @@
         scopes = msg.scopes;
         newInput.style.display = select.value === '__new__' ? 'block' : 'none';
         updateButtonState();
-        
-        // Request optimal window size based on content
-        requestResize();
+        sendPreview();
       }
       if (msg.type === 'preview-data') {
-        renderPreview(msg.preview);
-        // Resize after content is rendered
-        requestResize();
+        renderPreview(msg.preview, msg.warnings);
       }
     };
-
-    function requestResize() {
-      // Calculate optimal dimensions based on content
-      const container = document.querySelector('.container');
-      if (container) {
-        const rect = container.getBoundingClientRect();
-        const optimalWidth = Math.max(900, Math.min(rect.width + 50, 1200));
-        const optimalHeight = Math.max(600, Math.min(rect.height + 50, 800));
-        
-        parent.postMessage({ 
-          pluginMessage: { 
-            type: 'resize', 
-            width: optimalWidth, 
-            height: optimalHeight 
-          } 
-        }, '*');
-      }
-    }
 
     updateButtonState();
 
