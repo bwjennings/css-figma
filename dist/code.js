@@ -27,10 +27,10 @@
     return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
 
-  // node_modules/culori/src/rgb/parseNumber.js
+  // ../../../node_modules/culori/src/rgb/parseNumber.js
   var parseNumber, parseNumber_default;
   var init_parseNumber = __esm({
-    "node_modules/culori/src/rgb/parseNumber.js"() {
+    "../../../node_modules/culori/src/rgb/parseNumber.js"() {
       parseNumber = (color, len) => {
         if (typeof color !== "number") return;
         if (len === 3) {
@@ -72,10 +72,10 @@
     }
   });
 
-  // node_modules/culori/src/colors/named.js
+  // ../../../node_modules/culori/src/colors/named.js
   var named, named_default;
   var init_named = __esm({
-    "node_modules/culori/src/colors/named.js"() {
+    "../../../node_modules/culori/src/colors/named.js"() {
       named = {
         aliceblue: 15792383,
         antiquewhite: 16444375,
@@ -232,10 +232,10 @@
     }
   });
 
-  // node_modules/culori/src/rgb/parseNamed.js
+  // ../../../node_modules/culori/src/rgb/parseNamed.js
   var parseNamed, parseNamed_default;
   var init_parseNamed = __esm({
-    "node_modules/culori/src/rgb/parseNamed.js"() {
+    "../../../node_modules/culori/src/rgb/parseNamed.js"() {
       init_parseNumber();
       init_named();
       parseNamed = (color) => {
@@ -245,10 +245,10 @@
     }
   });
 
-  // node_modules/culori/src/rgb/parseHex.js
+  // ../../../node_modules/culori/src/rgb/parseHex.js
   var hex, parseHex, parseHex_default;
   var init_parseHex = __esm({
-    "node_modules/culori/src/rgb/parseHex.js"() {
+    "../../../node_modules/culori/src/rgb/parseHex.js"() {
       init_parseNumber();
       hex = /^#?([0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{4}|[0-9a-f]{3})$/i;
       parseHex = (color) => {
@@ -259,10 +259,10 @@
     }
   });
 
-  // node_modules/culori/src/util/regex.js
+  // ../../../node_modules/culori/src/util/regex.js
   var num, num_none, per, per_none, num_per, num_per_none, hue, hue_none, c, rx_num_per_none;
   var init_regex = __esm({
-    "node_modules/culori/src/util/regex.js"() {
+    "../../../node_modules/culori/src/util/regex.js"() {
       num = "([+-]?\\d*\\.?\\d+(?:[eE][+-]?\\d+)?)";
       num_none = `(?:${num}|none)`;
       per = `${num}%`;
@@ -276,10 +276,10 @@
     }
   });
 
-  // node_modules/culori/src/rgb/parseRgbLegacy.js
+  // ../../../node_modules/culori/src/rgb/parseRgbLegacy.js
   var rgb_num_old, rgb_per_old, parseRgbLegacy, parseRgbLegacy_default;
   var init_parseRgbLegacy = __esm({
-    "node_modules/culori/src/rgb/parseRgbLegacy.js"() {
+    "../../../node_modules/culori/src/rgb/parseRgbLegacy.js"() {
       init_regex();
       rgb_num_old = new RegExp(
         `^rgba?\\(\\s*${num}${c}${num}${c}${num}\\s*(?:,\\s*${num_per}\\s*)?\\)$`
@@ -324,20 +324,20 @@
     }
   });
 
-  // node_modules/culori/src/_prepare.js
+  // ../../../node_modules/culori/src/_prepare.js
   var prepare, prepare_default;
   var init_prepare = __esm({
-    "node_modules/culori/src/_prepare.js"() {
+    "../../../node_modules/culori/src/_prepare.js"() {
       init_parse();
       prepare = (color, mode) => color === void 0 ? void 0 : typeof color !== "object" ? parse_default(color) : color.mode !== void 0 ? color : mode ? __spreadProps(__spreadValues({}, color), { mode }) : void 0;
       prepare_default = prepare;
     }
   });
 
-  // node_modules/culori/src/converter.js
+  // ../../../node_modules/culori/src/converter.js
   var converter, converter_default;
   var init_converter = __esm({
-    "node_modules/culori/src/converter.js"() {
+    "../../../node_modules/culori/src/converter.js"() {
       init_modes();
       init_prepare();
       converter = (target_mode = "rgb") => (color) => (color = prepare_default(color, target_mode)) !== void 0 ? (
@@ -368,10 +368,10 @@
     }
   });
 
-  // node_modules/culori/src/modes.js
+  // ../../../node_modules/culori/src/modes.js
   var converters, modes, parsers, colorProfiles, identity, useMode, getMode, useParser;
   var init_modes = __esm({
-    "node_modules/culori/src/modes.js"() {
+    "../../../node_modules/culori/src/modes.js"() {
       init_converter();
       converters = {};
       modes = {};
@@ -430,7 +430,7 @@
     }
   });
 
-  // node_modules/culori/src/parse.js
+  // ../../../node_modules/culori/src/parse.js
   function is_num(chars) {
     let ch = chars[_i];
     let ch1 = chars[_i + 1];
@@ -679,7 +679,7 @@
   }
   var IdentStartCodePoint, IdentCodePoint, Tok, _i, huenits, parse, parse_default;
   var init_parse = __esm({
-    "node_modules/culori/src/parse.js"() {
+    "../../../node_modules/culori/src/parse.js"() {
       init_modes();
       IdentStartCodePoint = /[^\x00-\x7F]|[a-zA-Z_]/;
       IdentCodePoint = /[^\x00-\x7F]|[-\w]/;
@@ -720,7 +720,7 @@
     }
   });
 
-  // node_modules/culori/src/rgb/parseRgb.js
+  // ../../../node_modules/culori/src/rgb/parseRgb.js
   function parseRgb(color, parsed) {
     if (!parsed || parsed[0] !== "rgb" && parsed[0] !== "rgba") {
       return void 0;
@@ -752,33 +752,33 @@
   }
   var parseRgb_default;
   var init_parseRgb = __esm({
-    "node_modules/culori/src/rgb/parseRgb.js"() {
+    "../../../node_modules/culori/src/rgb/parseRgb.js"() {
       init_parse();
       parseRgb_default = parseRgb;
     }
   });
 
-  // node_modules/culori/src/rgb/parseTransparent.js
+  // ../../../node_modules/culori/src/rgb/parseTransparent.js
   var parseTransparent, parseTransparent_default;
   var init_parseTransparent = __esm({
-    "node_modules/culori/src/rgb/parseTransparent.js"() {
+    "../../../node_modules/culori/src/rgb/parseTransparent.js"() {
       parseTransparent = (c2) => c2 === "transparent" ? { mode: "rgb", r: 0, g: 0, b: 0, alpha: 0 } : void 0;
       parseTransparent_default = parseTransparent;
     }
   });
 
-  // node_modules/culori/src/interpolate/lerp.js
+  // ../../../node_modules/culori/src/interpolate/lerp.js
   var lerp;
   var init_lerp = __esm({
-    "node_modules/culori/src/interpolate/lerp.js"() {
+    "../../../node_modules/culori/src/interpolate/lerp.js"() {
       lerp = (a, b, t) => a + t * (b - a);
     }
   });
 
-  // node_modules/culori/src/interpolate/piecewise.js
+  // ../../../node_modules/culori/src/interpolate/piecewise.js
   var get_classes, interpolatorPiecewise;
   var init_piecewise = __esm({
-    "node_modules/culori/src/interpolate/piecewise.js"() {
+    "../../../node_modules/culori/src/interpolate/piecewise.js"() {
       get_classes = (arr) => {
         let classes = [];
         for (let i = 0; i < arr.length - 1; i++) {
@@ -806,20 +806,20 @@
     }
   });
 
-  // node_modules/culori/src/interpolate/linear.js
+  // ../../../node_modules/culori/src/interpolate/linear.js
   var interpolatorLinear;
   var init_linear = __esm({
-    "node_modules/culori/src/interpolate/linear.js"() {
+    "../../../node_modules/culori/src/interpolate/linear.js"() {
       init_lerp();
       init_piecewise();
       interpolatorLinear = interpolatorPiecewise(lerp);
     }
   });
 
-  // node_modules/culori/src/fixup/alpha.js
+  // ../../../node_modules/culori/src/fixup/alpha.js
   var fixupAlpha;
   var init_alpha = __esm({
-    "node_modules/culori/src/fixup/alpha.js"() {
+    "../../../node_modules/culori/src/fixup/alpha.js"() {
       fixupAlpha = (arr) => {
         let some_defined = false;
         let res = arr.map((v) => {
@@ -834,10 +834,10 @@
     }
   });
 
-  // node_modules/culori/src/rgb/definition.js
+  // ../../../node_modules/culori/src/rgb/definition.js
   var definition, definition_default;
   var init_definition = __esm({
-    "node_modules/culori/src/rgb/definition.js"() {
+    "../../../node_modules/culori/src/rgb/definition.js"() {
       init_parseNamed();
       init_parseHex();
       init_parseRgbLegacy();
@@ -871,10 +871,10 @@
     }
   });
 
-  // node_modules/culori/src/a98/convertA98ToXyz65.js
+  // ../../../node_modules/culori/src/a98/convertA98ToXyz65.js
   var linearize, convertA98ToXyz65, convertA98ToXyz65_default;
   var init_convertA98ToXyz65 = __esm({
-    "node_modules/culori/src/a98/convertA98ToXyz65.js"() {
+    "../../../node_modules/culori/src/a98/convertA98ToXyz65.js"() {
       linearize = (v = 0) => Math.pow(Math.abs(v), 563 / 256) * Math.sign(v);
       convertA98ToXyz65 = (a982) => {
         let r = linearize(a982.r);
@@ -895,10 +895,10 @@
     }
   });
 
-  // node_modules/culori/src/a98/convertXyz65ToA98.js
+  // ../../../node_modules/culori/src/a98/convertXyz65ToA98.js
   var gamma, convertXyz65ToA98, convertXyz65ToA98_default;
   var init_convertXyz65ToA98 = __esm({
-    "node_modules/culori/src/a98/convertXyz65ToA98.js"() {
+    "../../../node_modules/culori/src/a98/convertXyz65ToA98.js"() {
       gamma = (v) => Math.pow(Math.abs(v), 256 / 563) * Math.sign(v);
       convertXyz65ToA98 = ({ x, y, z, alpha }) => {
         if (x === void 0) x = 0;
@@ -925,10 +925,10 @@
     }
   });
 
-  // node_modules/culori/src/lrgb/convertRgbToLrgb.js
+  // ../../../node_modules/culori/src/lrgb/convertRgbToLrgb.js
   var fn, convertRgbToLrgb, convertRgbToLrgb_default;
   var init_convertRgbToLrgb = __esm({
-    "node_modules/culori/src/lrgb/convertRgbToLrgb.js"() {
+    "../../../node_modules/culori/src/lrgb/convertRgbToLrgb.js"() {
       fn = (c2 = 0) => {
         const abs2 = Math.abs(c2);
         if (abs2 <= 0.04045) {
@@ -950,10 +950,10 @@
     }
   });
 
-  // node_modules/culori/src/xyz65/convertRgbToXyz65.js
+  // ../../../node_modules/culori/src/xyz65/convertRgbToXyz65.js
   var convertRgbToXyz65, convertRgbToXyz65_default;
   var init_convertRgbToXyz65 = __esm({
-    "node_modules/culori/src/xyz65/convertRgbToXyz65.js"() {
+    "../../../node_modules/culori/src/xyz65/convertRgbToXyz65.js"() {
       init_convertRgbToLrgb();
       convertRgbToXyz65 = (rgb3) => {
         let { r, g, b, alpha } = convertRgbToLrgb_default(rgb3);
@@ -972,10 +972,10 @@
     }
   });
 
-  // node_modules/culori/src/lrgb/convertLrgbToRgb.js
+  // ../../../node_modules/culori/src/lrgb/convertLrgbToRgb.js
   var fn2, convertLrgbToRgb, convertLrgbToRgb_default;
   var init_convertLrgbToRgb = __esm({
-    "node_modules/culori/src/lrgb/convertLrgbToRgb.js"() {
+    "../../../node_modules/culori/src/lrgb/convertLrgbToRgb.js"() {
       fn2 = (c2 = 0) => {
         const abs2 = Math.abs(c2);
         if (abs2 > 31308e-7) {
@@ -997,10 +997,10 @@
     }
   });
 
-  // node_modules/culori/src/xyz65/convertXyz65ToRgb.js
+  // ../../../node_modules/culori/src/xyz65/convertXyz65ToRgb.js
   var convertXyz65ToRgb, convertXyz65ToRgb_default;
   var init_convertXyz65ToRgb = __esm({
-    "node_modules/culori/src/xyz65/convertXyz65ToRgb.js"() {
+    "../../../node_modules/culori/src/xyz65/convertXyz65ToRgb.js"() {
       init_convertLrgbToRgb();
       convertXyz65ToRgb = ({ x, y, z, alpha }) => {
         if (x === void 0) x = 0;
@@ -1020,10 +1020,10 @@
     }
   });
 
-  // node_modules/culori/src/a98/definition.js
+  // ../../../node_modules/culori/src/a98/definition.js
   var definition2, definition_default2;
   var init_definition2 = __esm({
-    "node_modules/culori/src/a98/definition.js"() {
+    "../../../node_modules/culori/src/a98/definition.js"() {
       init_definition();
       init_convertA98ToXyz65();
       init_convertXyz65ToA98();
@@ -1046,19 +1046,19 @@
     }
   });
 
-  // node_modules/culori/src/util/normalizeHue.js
+  // ../../../node_modules/culori/src/util/normalizeHue.js
   var normalizeHue, normalizeHue_default;
   var init_normalizeHue = __esm({
-    "node_modules/culori/src/util/normalizeHue.js"() {
+    "../../../node_modules/culori/src/util/normalizeHue.js"() {
       normalizeHue = (hue3) => (hue3 = hue3 % 360) < 0 ? hue3 + 360 : hue3;
       normalizeHue_default = normalizeHue;
     }
   });
 
-  // node_modules/culori/src/fixup/hue.js
+  // ../../../node_modules/culori/src/fixup/hue.js
   var hue2, fixupHueShorter;
   var init_hue = __esm({
-    "node_modules/culori/src/fixup/hue.js"() {
+    "../../../node_modules/culori/src/fixup/hue.js"() {
       init_normalizeHue();
       hue2 = (hues, fn5) => {
         return hues.map((hue3, idx, arr) => {
@@ -1083,20 +1083,20 @@
     }
   });
 
-  // node_modules/culori/src/cubehelix/constants.js
+  // ../../../node_modules/culori/src/cubehelix/constants.js
   var M, degToRad, radToDeg;
   var init_constants = __esm({
-    "node_modules/culori/src/cubehelix/constants.js"() {
+    "../../../node_modules/culori/src/cubehelix/constants.js"() {
       M = [-0.14861, 1.78277, -0.29227, -0.90649, 1.97294, 0];
       degToRad = Math.PI / 180;
       radToDeg = 180 / Math.PI;
     }
   });
 
-  // node_modules/culori/src/cubehelix/convertRgbToCubehelix.js
+  // ../../../node_modules/culori/src/cubehelix/convertRgbToCubehelix.js
   var DE, BE, BCAD, convertRgbToCubehelix, convertRgbToCubehelix_default;
   var init_convertRgbToCubehelix = __esm({
-    "node_modules/culori/src/cubehelix/convertRgbToCubehelix.js"() {
+    "../../../node_modules/culori/src/cubehelix/convertRgbToCubehelix.js"() {
       init_constants();
       DE = M[3] * M[4];
       BE = M[1] * M[4];
@@ -1121,10 +1121,10 @@
     }
   });
 
-  // node_modules/culori/src/cubehelix/convertCubehelixToRgb.js
+  // ../../../node_modules/culori/src/cubehelix/convertCubehelixToRgb.js
   var convertCubehelixToRgb, convertCubehelixToRgb_default;
   var init_convertCubehelixToRgb = __esm({
-    "node_modules/culori/src/cubehelix/convertCubehelixToRgb.js"() {
+    "../../../node_modules/culori/src/cubehelix/convertCubehelixToRgb.js"() {
       init_constants();
       convertCubehelixToRgb = ({ h, s, l, alpha }) => {
         let res = { mode: "rgb" };
@@ -1143,10 +1143,10 @@
     }
   });
 
-  // node_modules/culori/src/difference.js
+  // ../../../node_modules/culori/src/difference.js
   var differenceHueSaturation, differenceHueNaive, differenceHueChroma;
   var init_difference = __esm({
-    "node_modules/culori/src/difference.js"() {
+    "../../../node_modules/culori/src/difference.js"() {
       init_normalizeHue();
       differenceHueSaturation = (std, smp) => {
         if (std.h === void 0 || smp.h === void 0 || !std.s || !smp.s) {
@@ -1180,10 +1180,10 @@
     }
   });
 
-  // node_modules/culori/src/average.js
+  // ../../../node_modules/culori/src/average.js
   var averageAngle;
   var init_average = __esm({
-    "node_modules/culori/src/average.js"() {
+    "../../../node_modules/culori/src/average.js"() {
       averageAngle = (val) => {
         let sum = val.reduce(
           (sum2, val2) => {
@@ -1202,10 +1202,10 @@
     }
   });
 
-  // node_modules/culori/src/cubehelix/definition.js
+  // ../../../node_modules/culori/src/cubehelix/definition.js
   var definition3, definition_default3;
   var init_definition3 = __esm({
-    "node_modules/culori/src/cubehelix/definition.js"() {
+    "../../../node_modules/culori/src/cubehelix/definition.js"() {
       init_hue();
       init_alpha();
       init_linear();
@@ -1252,10 +1252,10 @@
     }
   });
 
-  // node_modules/culori/src/lch/convertLabToLch.js
+  // ../../../node_modules/culori/src/lch/convertLabToLch.js
   var convertLabToLch, convertLabToLch_default;
   var init_convertLabToLch = __esm({
-    "node_modules/culori/src/lch/convertLabToLch.js"() {
+    "../../../node_modules/culori/src/lch/convertLabToLch.js"() {
       init_normalizeHue();
       convertLabToLch = ({ l, a, b, alpha }, mode = "lch") => {
         if (a === void 0) a = 0;
@@ -1270,10 +1270,10 @@
     }
   });
 
-  // node_modules/culori/src/lch/convertLchToLab.js
+  // ../../../node_modules/culori/src/lch/convertLchToLab.js
   var convertLchToLab, convertLchToLab_default;
   var init_convertLchToLab = __esm({
-    "node_modules/culori/src/lch/convertLchToLab.js"() {
+    "../../../node_modules/culori/src/lch/convertLchToLab.js"() {
       convertLchToLab = ({ l, c: c2, h, alpha }, mode = "lab") => {
         if (h === void 0) h = 0;
         let res = {
@@ -1289,19 +1289,19 @@
     }
   });
 
-  // node_modules/culori/src/xyz65/constants.js
+  // ../../../node_modules/culori/src/xyz65/constants.js
   var k, e;
   var init_constants2 = __esm({
-    "node_modules/culori/src/xyz65/constants.js"() {
+    "../../../node_modules/culori/src/xyz65/constants.js"() {
       k = Math.pow(29, 3) / Math.pow(3, 3);
       e = Math.pow(6, 3) / Math.pow(29, 3);
     }
   });
 
-  // node_modules/culori/src/constants.js
+  // ../../../node_modules/culori/src/constants.js
   var D50, D65, k2, e2;
   var init_constants3 = __esm({
-    "node_modules/culori/src/constants.js"() {
+    "../../../node_modules/culori/src/constants.js"() {
       D50 = {
         X: 0.3457 / 0.3585,
         Y: 1,
@@ -1317,10 +1317,10 @@
     }
   });
 
-  // node_modules/culori/src/lab65/convertLab65ToXyz65.js
+  // ../../../node_modules/culori/src/lab65/convertLab65ToXyz65.js
   var fn3, convertLab65ToXyz65, convertLab65ToXyz65_default;
   var init_convertLab65ToXyz65 = __esm({
-    "node_modules/culori/src/lab65/convertLab65ToXyz65.js"() {
+    "../../../node_modules/culori/src/lab65/convertLab65ToXyz65.js"() {
       init_constants2();
       init_constants3();
       fn3 = (v) => Math.pow(v, 3) > e ? Math.pow(v, 3) : (116 * v - 16) / k;
@@ -1346,10 +1346,10 @@
     }
   });
 
-  // node_modules/culori/src/lab65/convertLab65ToRgb.js
+  // ../../../node_modules/culori/src/lab65/convertLab65ToRgb.js
   var convertLab65ToRgb, convertLab65ToRgb_default;
   var init_convertLab65ToRgb = __esm({
-    "node_modules/culori/src/lab65/convertLab65ToRgb.js"() {
+    "../../../node_modules/culori/src/lab65/convertLab65ToRgb.js"() {
       init_convertLab65ToXyz65();
       init_convertXyz65ToRgb();
       convertLab65ToRgb = (lab2) => convertXyz65ToRgb_default(convertLab65ToXyz65_default(lab2));
@@ -1357,10 +1357,10 @@
     }
   });
 
-  // node_modules/culori/src/lab65/convertXyz65ToLab65.js
+  // ../../../node_modules/culori/src/lab65/convertXyz65ToLab65.js
   var f, convertXyz65ToLab65, convertXyz65ToLab65_default;
   var init_convertXyz65ToLab65 = __esm({
-    "node_modules/culori/src/lab65/convertXyz65ToLab65.js"() {
+    "../../../node_modules/culori/src/lab65/convertXyz65ToLab65.js"() {
       init_constants2();
       init_constants3();
       f = (value) => value > e ? Math.cbrt(value) : (k * value + 16) / 116;
@@ -1386,10 +1386,10 @@
     }
   });
 
-  // node_modules/culori/src/lab65/convertRgbToLab65.js
+  // ../../../node_modules/culori/src/lab65/convertRgbToLab65.js
   var convertRgbToLab65, convertRgbToLab65_default;
   var init_convertRgbToLab65 = __esm({
-    "node_modules/culori/src/lab65/convertRgbToLab65.js"() {
+    "../../../node_modules/culori/src/lab65/convertRgbToLab65.js"() {
       init_convertRgbToXyz65();
       init_convertXyz65ToLab65();
       convertRgbToLab65 = (rgb3) => {
@@ -1403,10 +1403,10 @@
     }
   });
 
-  // node_modules/culori/src/dlch/constants.js
+  // ../../../node_modules/culori/src/dlch/constants.js
   var kE, kCH, \u03B8, cos\u03B8, sin\u03B8, factor;
   var init_constants4 = __esm({
-    "node_modules/culori/src/dlch/constants.js"() {
+    "../../../node_modules/culori/src/dlch/constants.js"() {
       kE = 1;
       kCH = 1;
       \u03B8 = 26 / 180 * Math.PI;
@@ -1416,10 +1416,10 @@
     }
   });
 
-  // node_modules/culori/src/dlch/convertDlchToLab65.js
+  // ../../../node_modules/culori/src/dlch/convertDlchToLab65.js
   var convertDlchToLab65, convertDlchToLab65_default;
   var init_convertDlchToLab65 = __esm({
-    "node_modules/culori/src/dlch/convertDlchToLab65.js"() {
+    "../../../node_modules/culori/src/dlch/convertDlchToLab65.js"() {
       init_constants4();
       convertDlchToLab65 = ({ l, c: c2, h, alpha }) => {
         if (l === void 0) l = 0;
@@ -1441,10 +1441,10 @@
     }
   });
 
-  // node_modules/culori/src/dlch/convertLab65ToDlch.js
+  // ../../../node_modules/culori/src/dlch/convertLab65ToDlch.js
   var convertLab65ToDlch, convertLab65ToDlch_default;
   var init_convertLab65ToDlch = __esm({
-    "node_modules/culori/src/dlch/convertLab65ToDlch.js"() {
+    "../../../node_modules/culori/src/dlch/convertLab65ToDlch.js"() {
       init_constants4();
       init_normalizeHue();
       convertLab65ToDlch = ({ l, a, b, alpha }) => {
@@ -1469,10 +1469,10 @@
     }
   });
 
-  // node_modules/culori/src/dlab/definition.js
+  // ../../../node_modules/culori/src/dlab/definition.js
   var convertDlabToLab65, convertLab65ToDlab, definition4, definition_default4;
   var init_definition4 = __esm({
-    "node_modules/culori/src/dlab/definition.js"() {
+    "../../../node_modules/culori/src/dlab/definition.js"() {
       init_convertLabToLch();
       init_convertLchToLab();
       init_convertLab65ToRgb();
@@ -1515,10 +1515,10 @@
     }
   });
 
-  // node_modules/culori/src/dlch/definition.js
+  // ../../../node_modules/culori/src/dlch/definition.js
   var definition5, definition_default5;
   var init_definition5 = __esm({
-    "node_modules/culori/src/dlch/definition.js"() {
+    "../../../node_modules/culori/src/dlch/definition.js"() {
       init_convertLabToLch();
       init_convertLchToLab();
       init_convertDlchToLab65();
@@ -1573,7 +1573,7 @@
     }
   });
 
-  // node_modules/culori/src/hsi/convertHsiToRgb.js
+  // ../../../node_modules/culori/src/hsi/convertHsiToRgb.js
   function convertHsiToRgb({ h, s, i, alpha }) {
     h = normalizeHue_default(h !== void 0 ? h : 0);
     if (s === void 0) s = 0;
@@ -1631,12 +1631,12 @@
     return res;
   }
   var init_convertHsiToRgb = __esm({
-    "node_modules/culori/src/hsi/convertHsiToRgb.js"() {
+    "../../../node_modules/culori/src/hsi/convertHsiToRgb.js"() {
       init_normalizeHue();
     }
   });
 
-  // node_modules/culori/src/hsi/convertRgbToHsi.js
+  // ../../../node_modules/culori/src/hsi/convertRgbToHsi.js
   function convertRgbToHsi({ r, g, b, alpha }) {
     if (r === void 0) r = 0;
     if (g === void 0) g = 0;
@@ -1653,14 +1653,14 @@
     return res;
   }
   var init_convertRgbToHsi = __esm({
-    "node_modules/culori/src/hsi/convertRgbToHsi.js"() {
+    "../../../node_modules/culori/src/hsi/convertRgbToHsi.js"() {
     }
   });
 
-  // node_modules/culori/src/hsi/definition.js
+  // ../../../node_modules/culori/src/hsi/definition.js
   var definition6, definition_default6;
   var init_definition6 = __esm({
-    "node_modules/culori/src/hsi/definition.js"() {
+    "../../../node_modules/culori/src/hsi/definition.js"() {
       init_convertHsiToRgb();
       init_convertRgbToHsi();
       init_hue();
@@ -1700,7 +1700,7 @@
     }
   });
 
-  // node_modules/culori/src/hsl/convertHslToRgb.js
+  // ../../../node_modules/culori/src/hsl/convertHslToRgb.js
   function convertHslToRgb({ h, s, l, alpha }) {
     h = normalizeHue_default(h !== void 0 ? h : 0);
     if (s === void 0) s = 0;
@@ -1735,12 +1735,12 @@
     return res;
   }
   var init_convertHslToRgb = __esm({
-    "node_modules/culori/src/hsl/convertHslToRgb.js"() {
+    "../../../node_modules/culori/src/hsl/convertHslToRgb.js"() {
       init_normalizeHue();
     }
   });
 
-  // node_modules/culori/src/hsl/convertRgbToHsl.js
+  // ../../../node_modules/culori/src/hsl/convertRgbToHsl.js
   function convertRgbToHsl({ r, g, b, alpha }) {
     if (r === void 0) r = 0;
     if (g === void 0) g = 0;
@@ -1757,14 +1757,14 @@
     return res;
   }
   var init_convertRgbToHsl = __esm({
-    "node_modules/culori/src/hsl/convertRgbToHsl.js"() {
+    "../../../node_modules/culori/src/hsl/convertRgbToHsl.js"() {
     }
   });
 
-  // node_modules/culori/src/util/hue.js
+  // ../../../node_modules/culori/src/util/hue.js
   var hueToDeg, hue_default;
   var init_hue2 = __esm({
-    "node_modules/culori/src/util/hue.js"() {
+    "../../../node_modules/culori/src/util/hue.js"() {
       hueToDeg = (val, unit) => {
         switch (unit) {
           case "deg":
@@ -1781,10 +1781,10 @@
     }
   });
 
-  // node_modules/culori/src/hsl/parseHslLegacy.js
+  // ../../../node_modules/culori/src/hsl/parseHslLegacy.js
   var hsl_old, parseHslLegacy, parseHslLegacy_default;
   var init_parseHslLegacy = __esm({
-    "node_modules/culori/src/hsl/parseHslLegacy.js"() {
+    "../../../node_modules/culori/src/hsl/parseHslLegacy.js"() {
       init_hue2();
       init_regex();
       hsl_old = new RegExp(
@@ -1816,7 +1816,7 @@
     }
   });
 
-  // node_modules/culori/src/hsl/parseHsl.js
+  // ../../../node_modules/culori/src/hsl/parseHsl.js
   function parseHsl(color, parsed) {
     if (!parsed || parsed[0] !== "hsl" && parsed[0] !== "hsla") {
       return void 0;
@@ -1854,16 +1854,16 @@
   }
   var parseHsl_default;
   var init_parseHsl = __esm({
-    "node_modules/culori/src/hsl/parseHsl.js"() {
+    "../../../node_modules/culori/src/hsl/parseHsl.js"() {
       init_parse();
       parseHsl_default = parseHsl;
     }
   });
 
-  // node_modules/culori/src/hsl/definition.js
+  // ../../../node_modules/culori/src/hsl/definition.js
   var definition7, definition_default7;
   var init_definition7 = __esm({
-    "node_modules/culori/src/hsl/definition.js"() {
+    "../../../node_modules/culori/src/hsl/definition.js"() {
       init_convertHslToRgb();
       init_convertRgbToHsl();
       init_parseHslLegacy();
@@ -1905,7 +1905,7 @@
     }
   });
 
-  // node_modules/culori/src/hsv/convertHsvToRgb.js
+  // ../../../node_modules/culori/src/hsv/convertHsvToRgb.js
   function convertHsvToRgb({ h, s, v, alpha }) {
     h = normalizeHue_default(h !== void 0 ? h : 0);
     if (s === void 0) s = 0;
@@ -1939,12 +1939,12 @@
     return res;
   }
   var init_convertHsvToRgb = __esm({
-    "node_modules/culori/src/hsv/convertHsvToRgb.js"() {
+    "../../../node_modules/culori/src/hsv/convertHsvToRgb.js"() {
       init_normalizeHue();
     }
   });
 
-  // node_modules/culori/src/hsv/convertRgbToHsv.js
+  // ../../../node_modules/culori/src/hsv/convertRgbToHsv.js
   function convertRgbToHsv({ r, g, b, alpha }) {
     if (r === void 0) r = 0;
     if (g === void 0) g = 0;
@@ -1961,14 +1961,14 @@
     return res;
   }
   var init_convertRgbToHsv = __esm({
-    "node_modules/culori/src/hsv/convertRgbToHsv.js"() {
+    "../../../node_modules/culori/src/hsv/convertRgbToHsv.js"() {
     }
   });
 
-  // node_modules/culori/src/hsv/definition.js
+  // ../../../node_modules/culori/src/hsv/definition.js
   var definition8, definition_default8;
   var init_definition8 = __esm({
-    "node_modules/culori/src/hsv/definition.js"() {
+    "../../../node_modules/culori/src/hsv/definition.js"() {
       init_convertHsvToRgb();
       init_convertRgbToHsv();
       init_hue();
@@ -2008,7 +2008,7 @@
     }
   });
 
-  // node_modules/culori/src/hwb/convertHwbToRgb.js
+  // ../../../node_modules/culori/src/hwb/convertHwbToRgb.js
   function convertHwbToRgb({ h, w, b, alpha }) {
     if (w === void 0) w = 0;
     if (b === void 0) b = 0;
@@ -2025,12 +2025,12 @@
     });
   }
   var init_convertHwbToRgb = __esm({
-    "node_modules/culori/src/hwb/convertHwbToRgb.js"() {
+    "../../../node_modules/culori/src/hwb/convertHwbToRgb.js"() {
       init_convertHsvToRgb();
     }
   });
 
-  // node_modules/culori/src/hwb/convertRgbToHwb.js
+  // ../../../node_modules/culori/src/hwb/convertRgbToHwb.js
   function convertRgbToHwb(rgba) {
     let hsv2 = convertRgbToHsv(rgba);
     if (hsv2 === void 0) return void 0;
@@ -2046,12 +2046,12 @@
     return res;
   }
   var init_convertRgbToHwb = __esm({
-    "node_modules/culori/src/hwb/convertRgbToHwb.js"() {
+    "../../../node_modules/culori/src/hwb/convertRgbToHwb.js"() {
       init_convertRgbToHsv();
     }
   });
 
-  // node_modules/culori/src/hwb/parseHwb.js
+  // ../../../node_modules/culori/src/hwb/parseHwb.js
   function ParseHwb(color, parsed) {
     if (!parsed || parsed[0] !== "hwb") {
       return void 0;
@@ -2089,16 +2089,16 @@
   }
   var parseHwb_default;
   var init_parseHwb = __esm({
-    "node_modules/culori/src/hwb/parseHwb.js"() {
+    "../../../node_modules/culori/src/hwb/parseHwb.js"() {
       init_parse();
       parseHwb_default = ParseHwb;
     }
   });
 
-  // node_modules/culori/src/hwb/definition.js
+  // ../../../node_modules/culori/src/hwb/definition.js
   var definition9, definition_default9;
   var init_definition9 = __esm({
-    "node_modules/culori/src/hwb/definition.js"() {
+    "../../../node_modules/culori/src/hwb/definition.js"() {
       init_convertHwbToRgb();
       init_convertRgbToHwb();
       init_parseHwb();
@@ -2139,15 +2139,15 @@
     }
   });
 
-  // node_modules/culori/src/hdr/constants.js
+  // ../../../node_modules/culori/src/hdr/constants.js
   var YW;
   var init_constants5 = __esm({
-    "node_modules/culori/src/hdr/constants.js"() {
+    "../../../node_modules/culori/src/hdr/constants.js"() {
       YW = 203;
     }
   });
 
-  // node_modules/culori/src/hdr/transfer.js
+  // ../../../node_modules/culori/src/hdr/transfer.js
   function transferPqDecode(v) {
     if (v < 0) return 0;
     const c2 = Math.pow(v, 1 / M2);
@@ -2160,7 +2160,7 @@
   }
   var M1, M2, C1, C2, C3;
   var init_transfer = __esm({
-    "node_modules/culori/src/hdr/transfer.js"() {
+    "../../../node_modules/culori/src/hdr/transfer.js"() {
       M1 = 0.1593017578125;
       M2 = 78.84375;
       C1 = 0.8359375;
@@ -2169,10 +2169,10 @@
     }
   });
 
-  // node_modules/culori/src/itp/convertItpToXyz65.js
+  // ../../../node_modules/culori/src/itp/convertItpToXyz65.js
   var toRel, convertItpToXyz65, convertItpToXyz65_default;
   var init_convertItpToXyz65 = __esm({
-    "node_modules/culori/src/itp/convertItpToXyz65.js"() {
+    "../../../node_modules/culori/src/itp/convertItpToXyz65.js"() {
       init_constants5();
       init_transfer();
       toRel = (c2) => Math.max(c2 / YW, 0);
@@ -2210,10 +2210,10 @@
     }
   });
 
-  // node_modules/culori/src/itp/convertXyz65ToItp.js
+  // ../../../node_modules/culori/src/itp/convertXyz65ToItp.js
   var toAbs, convertXyz65ToItp, convertXyz65ToItp_default;
   var init_convertXyz65ToItp = __esm({
-    "node_modules/culori/src/itp/convertXyz65ToItp.js"() {
+    "../../../node_modules/culori/src/itp/convertXyz65ToItp.js"() {
       init_constants5();
       init_transfer();
       toAbs = (c2 = 0) => Math.max(c2 * YW, 0);
@@ -2243,10 +2243,10 @@
     }
   });
 
-  // node_modules/culori/src/itp/definition.js
+  // ../../../node_modules/culori/src/itp/definition.js
   var definition10, definition_default10;
   var init_definition10 = __esm({
-    "node_modules/culori/src/itp/definition.js"() {
+    "../../../node_modules/culori/src/itp/definition.js"() {
       init_linear();
       init_alpha();
       init_convertItpToXyz65();
@@ -2282,10 +2282,10 @@
     }
   });
 
-  // node_modules/culori/src/jab/convertXyz65ToJab.js
+  // ../../../node_modules/culori/src/jab/convertXyz65ToJab.js
   var p, d0, jabPqEncode, abs, convertXyz65ToJab, convertXyz65ToJab_default;
   var init_convertXyz65ToJab = __esm({
-    "node_modules/culori/src/jab/convertXyz65ToJab.js"() {
+    "../../../node_modules/culori/src/jab/convertXyz65ToJab.js"() {
       init_transfer();
       p = 134.03437499999998;
       d0 = 16295499532821565e-27;
@@ -2320,10 +2320,10 @@
     }
   });
 
-  // node_modules/culori/src/jab/convertJabToXyz65.js
+  // ../../../node_modules/culori/src/jab/convertJabToXyz65.js
   var p2, d02, jabPqDecode, rel, convertJabToXyz65, convertJabToXyz65_default;
   var init_convertJabToXyz65 = __esm({
-    "node_modules/culori/src/jab/convertJabToXyz65.js"() {
+    "../../../node_modules/culori/src/jab/convertJabToXyz65.js"() {
       init_transfer();
       p2 = 134.03437499999998;
       d02 = 16295499532821565e-27;
@@ -2360,10 +2360,10 @@
     }
   });
 
-  // node_modules/culori/src/jab/convertRgbToJab.js
+  // ../../../node_modules/culori/src/jab/convertRgbToJab.js
   var convertRgbToJab, convertRgbToJab_default;
   var init_convertRgbToJab = __esm({
-    "node_modules/culori/src/jab/convertRgbToJab.js"() {
+    "../../../node_modules/culori/src/jab/convertRgbToJab.js"() {
       init_convertXyz65ToJab();
       init_convertRgbToXyz65();
       convertRgbToJab = (rgb3) => {
@@ -2377,10 +2377,10 @@
     }
   });
 
-  // node_modules/culori/src/jab/convertJabToRgb.js
+  // ../../../node_modules/culori/src/jab/convertJabToRgb.js
   var convertJabToRgb, convertJabToRgb_default;
   var init_convertJabToRgb = __esm({
-    "node_modules/culori/src/jab/convertJabToRgb.js"() {
+    "../../../node_modules/culori/src/jab/convertJabToRgb.js"() {
       init_convertXyz65ToRgb();
       init_convertJabToXyz65();
       convertJabToRgb = (color) => convertXyz65ToRgb_default(convertJabToXyz65_default(color));
@@ -2388,10 +2388,10 @@
     }
   });
 
-  // node_modules/culori/src/jab/definition.js
+  // ../../../node_modules/culori/src/jab/definition.js
   var definition11, definition_default11;
   var init_definition11 = __esm({
-    "node_modules/culori/src/jab/definition.js"() {
+    "../../../node_modules/culori/src/jab/definition.js"() {
       init_convertXyz65ToJab();
       init_convertJabToXyz65();
       init_convertRgbToJab();
@@ -2427,10 +2427,10 @@
     }
   });
 
-  // node_modules/culori/src/jch/convertJabToJch.js
+  // ../../../node_modules/culori/src/jch/convertJabToJch.js
   var convertJabToJch, convertJabToJch_default;
   var init_convertJabToJch = __esm({
-    "node_modules/culori/src/jch/convertJabToJch.js"() {
+    "../../../node_modules/culori/src/jch/convertJabToJch.js"() {
       init_normalizeHue();
       convertJabToJch = ({ j, a, b, alpha }) => {
         if (a === void 0) a = 0;
@@ -2453,10 +2453,10 @@
     }
   });
 
-  // node_modules/culori/src/jch/convertJchToJab.js
+  // ../../../node_modules/culori/src/jch/convertJchToJab.js
   var convertJchToJab, convertJchToJab_default;
   var init_convertJchToJab = __esm({
-    "node_modules/culori/src/jch/convertJchToJab.js"() {
+    "../../../node_modules/culori/src/jch/convertJchToJab.js"() {
       convertJchToJab = ({ j, c: c2, h, alpha }) => {
         if (h === void 0) h = 0;
         let res = {
@@ -2472,10 +2472,10 @@
     }
   });
 
-  // node_modules/culori/src/jch/definition.js
+  // ../../../node_modules/culori/src/jch/definition.js
   var definition12, definition_default12;
   var init_definition12 = __esm({
-    "node_modules/culori/src/jch/definition.js"() {
+    "../../../node_modules/culori/src/jch/definition.js"() {
       init_convertJabToJch();
       init_convertJchToJab();
       init_convertJabToRgb();
@@ -2520,19 +2520,19 @@
     }
   });
 
-  // node_modules/culori/src/xyz50/constants.js
+  // ../../../node_modules/culori/src/xyz50/constants.js
   var k3, e3;
   var init_constants6 = __esm({
-    "node_modules/culori/src/xyz50/constants.js"() {
+    "../../../node_modules/culori/src/xyz50/constants.js"() {
       k3 = Math.pow(29, 3) / Math.pow(3, 3);
       e3 = Math.pow(6, 3) / Math.pow(29, 3);
     }
   });
 
-  // node_modules/culori/src/lab/convertLabToXyz50.js
+  // ../../../node_modules/culori/src/lab/convertLabToXyz50.js
   var fn4, convertLabToXyz50, convertLabToXyz50_default;
   var init_convertLabToXyz50 = __esm({
-    "node_modules/culori/src/lab/convertLabToXyz50.js"() {
+    "../../../node_modules/culori/src/lab/convertLabToXyz50.js"() {
       init_constants6();
       init_constants3();
       fn4 = (v) => Math.pow(v, 3) > e3 ? Math.pow(v, 3) : (116 * v - 16) / k3;
@@ -2558,10 +2558,10 @@
     }
   });
 
-  // node_modules/culori/src/xyz50/convertXyz50ToRgb.js
+  // ../../../node_modules/culori/src/xyz50/convertXyz50ToRgb.js
   var convertXyz50ToRgb, convertXyz50ToRgb_default;
   var init_convertXyz50ToRgb = __esm({
-    "node_modules/culori/src/xyz50/convertXyz50ToRgb.js"() {
+    "../../../node_modules/culori/src/xyz50/convertXyz50ToRgb.js"() {
       init_convertLrgbToRgb();
       convertXyz50ToRgb = ({ x, y, z, alpha }) => {
         if (x === void 0) x = 0;
@@ -2581,10 +2581,10 @@
     }
   });
 
-  // node_modules/culori/src/lab/convertLabToRgb.js
+  // ../../../node_modules/culori/src/lab/convertLabToRgb.js
   var convertLabToRgb, convertLabToRgb_default;
   var init_convertLabToRgb = __esm({
-    "node_modules/culori/src/lab/convertLabToRgb.js"() {
+    "../../../node_modules/culori/src/lab/convertLabToRgb.js"() {
       init_convertLabToXyz50();
       init_convertXyz50ToRgb();
       convertLabToRgb = (lab2) => convertXyz50ToRgb_default(convertLabToXyz50_default(lab2));
@@ -2592,10 +2592,10 @@
     }
   });
 
-  // node_modules/culori/src/xyz50/convertRgbToXyz50.js
+  // ../../../node_modules/culori/src/xyz50/convertRgbToXyz50.js
   var convertRgbToXyz50, convertRgbToXyz50_default;
   var init_convertRgbToXyz50 = __esm({
-    "node_modules/culori/src/xyz50/convertRgbToXyz50.js"() {
+    "../../../node_modules/culori/src/xyz50/convertRgbToXyz50.js"() {
       init_convertRgbToLrgb();
       convertRgbToXyz50 = (rgb3) => {
         let { r, g, b, alpha } = convertRgbToLrgb_default(rgb3);
@@ -2614,10 +2614,10 @@
     }
   });
 
-  // node_modules/culori/src/lab/convertXyz50ToLab.js
+  // ../../../node_modules/culori/src/lab/convertXyz50ToLab.js
   var f2, convertXyz50ToLab, convertXyz50ToLab_default;
   var init_convertXyz50ToLab = __esm({
-    "node_modules/culori/src/lab/convertXyz50ToLab.js"() {
+    "../../../node_modules/culori/src/lab/convertXyz50ToLab.js"() {
       init_constants6();
       init_constants3();
       f2 = (value) => value > e3 ? Math.cbrt(value) : (k3 * value + 16) / 116;
@@ -2643,10 +2643,10 @@
     }
   });
 
-  // node_modules/culori/src/lab/convertRgbToLab.js
+  // ../../../node_modules/culori/src/lab/convertRgbToLab.js
   var convertRgbToLab, convertRgbToLab_default;
   var init_convertRgbToLab = __esm({
-    "node_modules/culori/src/lab/convertRgbToLab.js"() {
+    "../../../node_modules/culori/src/lab/convertRgbToLab.js"() {
       init_convertRgbToXyz50();
       init_convertXyz50ToLab();
       convertRgbToLab = (rgb3) => {
@@ -2660,7 +2660,7 @@
     }
   });
 
-  // node_modules/culori/src/lab/parseLab.js
+  // ../../../node_modules/culori/src/lab/parseLab.js
   function parseLab(color, parsed) {
     if (!parsed || parsed[0] !== "lab") {
       return void 0;
@@ -2692,16 +2692,16 @@
   }
   var parseLab_default;
   var init_parseLab = __esm({
-    "node_modules/culori/src/lab/parseLab.js"() {
+    "../../../node_modules/culori/src/lab/parseLab.js"() {
       init_parse();
       parseLab_default = parseLab;
     }
   });
 
-  // node_modules/culori/src/lab/definition.js
+  // ../../../node_modules/culori/src/lab/definition.js
   var definition13, definition_default13;
   var init_definition13 = __esm({
-    "node_modules/culori/src/lab/definition.js"() {
+    "../../../node_modules/culori/src/lab/definition.js"() {
       init_convertLabToRgb();
       init_convertLabToXyz50();
       init_convertRgbToLab();
@@ -2738,10 +2738,10 @@
     }
   });
 
-  // node_modules/culori/src/lab65/definition.js
+  // ../../../node_modules/culori/src/lab65/definition.js
   var definition14, definition_default14;
   var init_definition14 = __esm({
-    "node_modules/culori/src/lab65/definition.js"() {
+    "../../../node_modules/culori/src/lab65/definition.js"() {
       init_convertLab65ToRgb();
       init_convertLab65ToXyz65();
       init_convertRgbToLab65();
@@ -2769,7 +2769,7 @@
     }
   });
 
-  // node_modules/culori/src/lch/parseLch.js
+  // ../../../node_modules/culori/src/lch/parseLch.js
   function parseLch(color, parsed) {
     if (!parsed || parsed[0] !== "lch") {
       return void 0;
@@ -2807,16 +2807,16 @@
   }
   var parseLch_default;
   var init_parseLch = __esm({
-    "node_modules/culori/src/lch/parseLch.js"() {
+    "../../../node_modules/culori/src/lch/parseLch.js"() {
       init_parse();
       parseLch_default = parseLch;
     }
   });
 
-  // node_modules/culori/src/lch/definition.js
+  // ../../../node_modules/culori/src/lch/definition.js
   var definition15, definition_default15;
   var init_definition15 = __esm({
-    "node_modules/culori/src/lch/definition.js"() {
+    "../../../node_modules/culori/src/lch/definition.js"() {
       init_convertLabToLch();
       init_convertLchToLab();
       init_convertLabToRgb();
@@ -2862,10 +2862,10 @@
     }
   });
 
-  // node_modules/culori/src/lch65/definition.js
+  // ../../../node_modules/culori/src/lch65/definition.js
   var definition16, definition_default16;
   var init_definition16 = __esm({
-    "node_modules/culori/src/lch65/definition.js"() {
+    "../../../node_modules/culori/src/lch65/definition.js"() {
       init_convertLabToLch();
       init_convertLchToLab();
       init_convertLab65ToRgb();
@@ -2893,10 +2893,10 @@
     }
   });
 
-  // node_modules/culori/src/lchuv/convertLuvToLchuv.js
+  // ../../../node_modules/culori/src/lchuv/convertLuvToLchuv.js
   var convertLuvToLchuv, convertLuvToLchuv_default;
   var init_convertLuvToLchuv = __esm({
-    "node_modules/culori/src/lchuv/convertLuvToLchuv.js"() {
+    "../../../node_modules/culori/src/lchuv/convertLuvToLchuv.js"() {
       init_normalizeHue();
       convertLuvToLchuv = ({ l, u, v, alpha }) => {
         if (u === void 0) u = 0;
@@ -2919,10 +2919,10 @@
     }
   });
 
-  // node_modules/culori/src/lchuv/convertLchuvToLuv.js
+  // ../../../node_modules/culori/src/lchuv/convertLchuvToLuv.js
   var convertLchuvToLuv, convertLchuvToLuv_default;
   var init_convertLchuvToLuv = __esm({
-    "node_modules/culori/src/lchuv/convertLchuvToLuv.js"() {
+    "../../../node_modules/culori/src/lchuv/convertLchuvToLuv.js"() {
       convertLchuvToLuv = ({ l, c: c2, h, alpha }) => {
         if (h === void 0) h = 0;
         let res = {
@@ -2940,10 +2940,10 @@
     }
   });
 
-  // node_modules/culori/src/luv/convertXyz50ToLuv.js
+  // ../../../node_modules/culori/src/luv/convertXyz50ToLuv.js
   var u_fn, v_fn, un, vn, l_fn, convertXyz50ToLuv, convertXyz50ToLuv_default;
   var init_convertXyz50ToLuv = __esm({
-    "node_modules/culori/src/luv/convertXyz50ToLuv.js"() {
+    "../../../node_modules/culori/src/luv/convertXyz50ToLuv.js"() {
       init_constants6();
       init_constants3();
       u_fn = (x, y, z) => 4 * x / (x + 15 * y + 3 * z);
@@ -2979,10 +2979,10 @@
     }
   });
 
-  // node_modules/culori/src/luv/convertLuvToXyz50.js
+  // ../../../node_modules/culori/src/luv/convertLuvToXyz50.js
   var u_fn2, v_fn2, un2, vn2, convertLuvToXyz50, convertLuvToXyz50_default;
   var init_convertLuvToXyz50 = __esm({
-    "node_modules/culori/src/luv/convertLuvToXyz50.js"() {
+    "../../../node_modules/culori/src/luv/convertLuvToXyz50.js"() {
       init_constants6();
       init_constants3();
       u_fn2 = (x, y, z) => 4 * x / (x + 15 * y + 3 * z);
@@ -3011,10 +3011,10 @@
     }
   });
 
-  // node_modules/culori/src/lchuv/definition.js
+  // ../../../node_modules/culori/src/lchuv/definition.js
   var convertRgbToLchuv, convertLchuvToRgb, definition17, definition_default17;
   var init_definition17 = __esm({
-    "node_modules/culori/src/lchuv/definition.js"() {
+    "../../../node_modules/culori/src/lchuv/definition.js"() {
       init_convertLuvToLchuv();
       init_convertLchuvToLuv();
       init_convertXyz50ToLuv();
@@ -3063,10 +3063,10 @@
     }
   });
 
-  // node_modules/culori/src/lrgb/definition.js
+  // ../../../node_modules/culori/src/lrgb/definition.js
   var definition18, definition_default18;
   var init_definition18 = __esm({
-    "node_modules/culori/src/lrgb/definition.js"() {
+    "../../../node_modules/culori/src/lrgb/definition.js"() {
       init_definition();
       init_convertRgbToLrgb();
       init_convertLrgbToRgb();
@@ -3085,10 +3085,10 @@
     }
   });
 
-  // node_modules/culori/src/luv/definition.js
+  // ../../../node_modules/culori/src/luv/definition.js
   var definition19, definition_default19;
   var init_definition19 = __esm({
-    "node_modules/culori/src/luv/definition.js"() {
+    "../../../node_modules/culori/src/luv/definition.js"() {
       init_convertXyz50ToLuv();
       init_convertLuvToXyz50();
       init_convertXyz50ToRgb();
@@ -3124,10 +3124,10 @@
     }
   });
 
-  // node_modules/culori/src/oklab/convertLrgbToOklab.js
+  // ../../../node_modules/culori/src/oklab/convertLrgbToOklab.js
   var convertLrgbToOklab, convertLrgbToOklab_default;
   var init_convertLrgbToOklab = __esm({
-    "node_modules/culori/src/oklab/convertLrgbToOklab.js"() {
+    "../../../node_modules/culori/src/oklab/convertLrgbToOklab.js"() {
       convertLrgbToOklab = ({ r, g, b, alpha }) => {
         if (r === void 0) r = 0;
         if (g === void 0) g = 0;
@@ -3156,10 +3156,10 @@
     }
   });
 
-  // node_modules/culori/src/oklab/convertRgbToOklab.js
+  // ../../../node_modules/culori/src/oklab/convertRgbToOklab.js
   var convertRgbToOklab, convertRgbToOklab_default;
   var init_convertRgbToOklab = __esm({
-    "node_modules/culori/src/oklab/convertRgbToOklab.js"() {
+    "../../../node_modules/culori/src/oklab/convertRgbToOklab.js"() {
       init_convertRgbToLrgb();
       init_convertLrgbToOklab();
       convertRgbToOklab = (rgb3) => {
@@ -3173,10 +3173,10 @@
     }
   });
 
-  // node_modules/culori/src/oklab/convertOklabToLrgb.js
+  // ../../../node_modules/culori/src/oklab/convertOklabToLrgb.js
   var convertOklabToLrgb, convertOklabToLrgb_default;
   var init_convertOklabToLrgb = __esm({
-    "node_modules/culori/src/oklab/convertOklabToLrgb.js"() {
+    "../../../node_modules/culori/src/oklab/convertOklabToLrgb.js"() {
       convertOklabToLrgb = ({ l, a, b, alpha }) => {
         if (l === void 0) l = 0;
         if (a === void 0) a = 0;
@@ -3208,10 +3208,10 @@
     }
   });
 
-  // node_modules/culori/src/oklab/convertOklabToRgb.js
+  // ../../../node_modules/culori/src/oklab/convertOklabToRgb.js
   var convertOklabToRgb, convertOklabToRgb_default;
   var init_convertOklabToRgb = __esm({
-    "node_modules/culori/src/oklab/convertOklabToRgb.js"() {
+    "../../../node_modules/culori/src/oklab/convertOklabToRgb.js"() {
       init_convertLrgbToRgb();
       init_convertOklabToLrgb();
       convertOklabToRgb = (c2) => convertLrgbToRgb_default(convertOklabToLrgb_default(c2));
@@ -3219,7 +3219,7 @@
     }
   });
 
-  // node_modules/culori/src/okhsl/helpers.js
+  // ../../../node_modules/culori/src/okhsl/helpers.js
   function toe(x) {
     const k_1 = 0.206;
     const k_2 = 0.03;
@@ -3378,12 +3378,12 @@
     return [C_0, C_mid, C_max];
   }
   var init_helpers = __esm({
-    "node_modules/culori/src/okhsl/helpers.js"() {
+    "../../../node_modules/culori/src/okhsl/helpers.js"() {
       init_convertOklabToLrgb();
     }
   });
 
-  // node_modules/culori/src/okhsl/convertOklabToOkhsl.js
+  // ../../../node_modules/culori/src/okhsl/convertOklabToOkhsl.js
   function convertOklabToOkhsl(lab2) {
     const l = lab2.l !== void 0 ? lab2.l : 0;
     const a = lab2.a !== void 0 ? lab2.a : 0;
@@ -3419,13 +3419,13 @@
     return ret;
   }
   var init_convertOklabToOkhsl = __esm({
-    "node_modules/culori/src/okhsl/convertOklabToOkhsl.js"() {
+    "../../../node_modules/culori/src/okhsl/convertOklabToOkhsl.js"() {
       init_normalizeHue();
       init_helpers();
     }
   });
 
-  // node_modules/culori/src/okhsl/convertOkhslToOklab.js
+  // ../../../node_modules/culori/src/okhsl/convertOkhslToOklab.js
   function convertOkhslToOklab(hsl2) {
     let h = hsl2.h !== void 0 ? hsl2.h : 0;
     let s = hsl2.s !== void 0 ? hsl2.s : 0;
@@ -3459,15 +3459,15 @@
     return ret;
   }
   var init_convertOkhslToOklab = __esm({
-    "node_modules/culori/src/okhsl/convertOkhslToOklab.js"() {
+    "../../../node_modules/culori/src/okhsl/convertOkhslToOklab.js"() {
       init_helpers();
     }
   });
 
-  // node_modules/culori/src/okhsl/modeOkhsl.js
+  // ../../../node_modules/culori/src/okhsl/modeOkhsl.js
   var modeOkhsl, modeOkhsl_default;
   var init_modeOkhsl = __esm({
-    "node_modules/culori/src/okhsl/modeOkhsl.js"() {
+    "../../../node_modules/culori/src/okhsl/modeOkhsl.js"() {
       init_convertRgbToOklab();
       init_convertOklabToRgb();
       init_convertOklabToOkhsl();
@@ -3491,7 +3491,7 @@
     }
   });
 
-  // node_modules/culori/src/okhsv/convertOklabToOkhsv.js
+  // ../../../node_modules/culori/src/okhsv/convertOklabToOkhsv.js
   function convertOklabToOkhsv(lab2) {
     let l = lab2.l !== void 0 ? lab2.l : 0;
     let a = lab2.a !== void 0 ? lab2.a : 0;
@@ -3528,14 +3528,14 @@
     return ret;
   }
   var init_convertOklabToOkhsv = __esm({
-    "node_modules/culori/src/okhsv/convertOklabToOkhsv.js"() {
+    "../../../node_modules/culori/src/okhsv/convertOklabToOkhsv.js"() {
       init_normalizeHue();
       init_convertOklabToLrgb();
       init_helpers();
     }
   });
 
-  // node_modules/culori/src/okhsv/convertOkhsvToOklab.js
+  // ../../../node_modules/culori/src/okhsv/convertOkhsvToOklab.js
   function convertOkhsvToOklab(hsv2) {
     const ret = { mode: "oklab" };
     if (hsv2.alpha !== void 0) {
@@ -3569,16 +3569,16 @@
     return ret;
   }
   var init_convertOkhsvToOklab = __esm({
-    "node_modules/culori/src/okhsv/convertOkhsvToOklab.js"() {
+    "../../../node_modules/culori/src/okhsv/convertOkhsvToOklab.js"() {
       init_convertOklabToLrgb();
       init_helpers();
     }
   });
 
-  // node_modules/culori/src/okhsv/modeOkhsv.js
+  // ../../../node_modules/culori/src/okhsv/modeOkhsv.js
   var modeOkhsv, modeOkhsv_default;
   var init_modeOkhsv = __esm({
-    "node_modules/culori/src/okhsv/modeOkhsv.js"() {
+    "../../../node_modules/culori/src/okhsv/modeOkhsv.js"() {
       init_convertRgbToOklab();
       init_convertOklabToRgb();
       init_convertOklabToOkhsv();
@@ -3602,7 +3602,7 @@
     }
   });
 
-  // node_modules/culori/src/oklab/parseOklab.js
+  // ../../../node_modules/culori/src/oklab/parseOklab.js
   function parseOklab(color, parsed) {
     if (!parsed || parsed[0] !== "oklab") {
       return void 0;
@@ -3637,16 +3637,16 @@
   }
   var parseOklab_default;
   var init_parseOklab = __esm({
-    "node_modules/culori/src/oklab/parseOklab.js"() {
+    "../../../node_modules/culori/src/oklab/parseOklab.js"() {
       init_parse();
       parseOklab_default = parseOklab;
     }
   });
 
-  // node_modules/culori/src/oklab/definition.js
+  // ../../../node_modules/culori/src/oklab/definition.js
   var definition20, definition_default20;
   var init_definition20 = __esm({
-    "node_modules/culori/src/oklab/definition.js"() {
+    "../../../node_modules/culori/src/oklab/definition.js"() {
       init_convertOklabToLrgb();
       init_convertLrgbToOklab();
       init_convertRgbToOklab();
@@ -3675,7 +3675,7 @@
     }
   });
 
-  // node_modules/culori/src/oklch/parseOklch.js
+  // ../../../node_modules/culori/src/oklch/parseOklch.js
   function parseOklch(color, parsed) {
     if (!parsed || parsed[0] !== "oklch") {
       return void 0;
@@ -3716,16 +3716,16 @@
   }
   var parseOklch_default;
   var init_parseOklch = __esm({
-    "node_modules/culori/src/oklch/parseOklch.js"() {
+    "../../../node_modules/culori/src/oklch/parseOklch.js"() {
       init_parse();
       parseOklch_default = parseOklch;
     }
   });
 
-  // node_modules/culori/src/oklch/definition.js
+  // ../../../node_modules/culori/src/oklch/definition.js
   var definition21, definition_default21;
   var init_definition21 = __esm({
-    "node_modules/culori/src/oklch/definition.js"() {
+    "../../../node_modules/culori/src/oklch/definition.js"() {
       init_definition15();
       init_convertLabToLch();
       init_convertLchToLab();
@@ -3754,10 +3754,10 @@
     }
   });
 
-  // node_modules/culori/src/p3/convertP3ToXyz65.js
+  // ../../../node_modules/culori/src/p3/convertP3ToXyz65.js
   var convertP3ToXyz65, convertP3ToXyz65_default;
   var init_convertP3ToXyz65 = __esm({
-    "node_modules/culori/src/p3/convertP3ToXyz65.js"() {
+    "../../../node_modules/culori/src/p3/convertP3ToXyz65.js"() {
       init_convertRgbToLrgb();
       convertP3ToXyz65 = (rgb3) => {
         let { r, g, b, alpha } = convertRgbToLrgb_default(rgb3);
@@ -3776,10 +3776,10 @@
     }
   });
 
-  // node_modules/culori/src/p3/convertXyz65ToP3.js
+  // ../../../node_modules/culori/src/p3/convertXyz65ToP3.js
   var convertXyz65ToP3, convertXyz65ToP3_default;
   var init_convertXyz65ToP3 = __esm({
-    "node_modules/culori/src/p3/convertXyz65ToP3.js"() {
+    "../../../node_modules/culori/src/p3/convertXyz65ToP3.js"() {
       init_convertLrgbToRgb();
       convertXyz65ToP3 = ({ x, y, z, alpha }) => {
         if (x === void 0) x = 0;
@@ -3802,10 +3802,10 @@
     }
   });
 
-  // node_modules/culori/src/p3/definition.js
+  // ../../../node_modules/culori/src/p3/definition.js
   var definition22, definition_default22;
   var init_definition22 = __esm({
-    "node_modules/culori/src/p3/definition.js"() {
+    "../../../node_modules/culori/src/p3/definition.js"() {
       init_definition();
       init_convertP3ToXyz65();
       init_convertXyz65ToP3();
@@ -3828,10 +3828,10 @@
     }
   });
 
-  // node_modules/culori/src/prophoto/convertXyz50ToProphoto.js
+  // ../../../node_modules/culori/src/prophoto/convertXyz50ToProphoto.js
   var gamma2, convertXyz50ToProphoto, convertXyz50ToProphoto_default;
   var init_convertXyz50ToProphoto = __esm({
-    "node_modules/culori/src/prophoto/convertXyz50ToProphoto.js"() {
+    "../../../node_modules/culori/src/prophoto/convertXyz50ToProphoto.js"() {
       gamma2 = (v) => {
         let abs2 = Math.abs(v);
         if (abs2 >= 1 / 512) {
@@ -3862,10 +3862,10 @@
     }
   });
 
-  // node_modules/culori/src/prophoto/convertProphotoToXyz50.js
+  // ../../../node_modules/culori/src/prophoto/convertProphotoToXyz50.js
   var linearize2, convertProphotoToXyz50, convertProphotoToXyz50_default;
   var init_convertProphotoToXyz50 = __esm({
-    "node_modules/culori/src/prophoto/convertProphotoToXyz50.js"() {
+    "../../../node_modules/culori/src/prophoto/convertProphotoToXyz50.js"() {
       linearize2 = (v = 0) => {
         let abs2 = Math.abs(v);
         if (abs2 >= 16 / 512) {
@@ -3892,10 +3892,10 @@
     }
   });
 
-  // node_modules/culori/src/prophoto/definition.js
+  // ../../../node_modules/culori/src/prophoto/definition.js
   var definition23, definition_default23;
   var init_definition23 = __esm({
-    "node_modules/culori/src/prophoto/definition.js"() {
+    "../../../node_modules/culori/src/prophoto/definition.js"() {
       init_definition();
       init_convertXyz50ToProphoto();
       init_convertProphotoToXyz50();
@@ -3918,10 +3918,10 @@
     }
   });
 
-  // node_modules/culori/src/rec2020/convertXyz65ToRec2020.js
+  // ../../../node_modules/culori/src/rec2020/convertXyz65ToRec2020.js
   var \u03B1, \u03B2, gamma3, convertXyz65ToRec2020, convertXyz65ToRec2020_default;
   var init_convertXyz65ToRec2020 = __esm({
-    "node_modules/culori/src/rec2020/convertXyz65ToRec2020.js"() {
+    "../../../node_modules/culori/src/rec2020/convertXyz65ToRec2020.js"() {
       \u03B1 = 1.09929682680944;
       \u03B2 = 0.018053968510807;
       gamma3 = (v) => {
@@ -3956,10 +3956,10 @@
     }
   });
 
-  // node_modules/culori/src/rec2020/convertRec2020ToXyz65.js
+  // ../../../node_modules/culori/src/rec2020/convertRec2020ToXyz65.js
   var \u03B12, \u03B22, linearize3, convertRec2020ToXyz65, convertRec2020ToXyz65_default;
   var init_convertRec2020ToXyz65 = __esm({
-    "node_modules/culori/src/rec2020/convertRec2020ToXyz65.js"() {
+    "../../../node_modules/culori/src/rec2020/convertRec2020ToXyz65.js"() {
       \u03B12 = 1.09929682680944;
       \u03B22 = 0.018053968510807;
       linearize3 = (v = 0) => {
@@ -3988,10 +3988,10 @@
     }
   });
 
-  // node_modules/culori/src/rec2020/definition.js
+  // ../../../node_modules/culori/src/rec2020/definition.js
   var definition24, definition_default24;
   var init_definition24 = __esm({
-    "node_modules/culori/src/rec2020/definition.js"() {
+    "../../../node_modules/culori/src/rec2020/definition.js"() {
       init_definition();
       init_convertXyz65ToRec2020();
       init_convertRec2020ToXyz65();
@@ -4014,19 +4014,19 @@
     }
   });
 
-  // node_modules/culori/src/xyb/constants.js
+  // ../../../node_modules/culori/src/xyb/constants.js
   var bias, bias_cbrt;
   var init_constants7 = __esm({
-    "node_modules/culori/src/xyb/constants.js"() {
+    "../../../node_modules/culori/src/xyb/constants.js"() {
       bias = 0.0037930732552754493;
       bias_cbrt = Math.cbrt(bias);
     }
   });
 
-  // node_modules/culori/src/xyb/convertRgbToXyb.js
+  // ../../../node_modules/culori/src/xyb/convertRgbToXyb.js
   var transfer, convertRgbToXyb, convertRgbToXyb_default;
   var init_convertRgbToXyb = __esm({
-    "node_modules/culori/src/xyb/convertRgbToXyb.js"() {
+    "../../../node_modules/culori/src/xyb/convertRgbToXyb.js"() {
       init_convertRgbToLrgb();
       init_constants7();
       transfer = (v) => Math.cbrt(v) - bias_cbrt;
@@ -4051,10 +4051,10 @@
     }
   });
 
-  // node_modules/culori/src/xyb/convertXybToRgb.js
+  // ../../../node_modules/culori/src/xyb/convertXybToRgb.js
   var transfer2, convertXybToRgb, convertXybToRgb_default;
   var init_convertXybToRgb = __esm({
-    "node_modules/culori/src/xyb/convertXybToRgb.js"() {
+    "../../../node_modules/culori/src/xyb/convertXybToRgb.js"() {
       init_convertLrgbToRgb();
       init_constants7();
       transfer2 = (v) => Math.pow(v + bias_cbrt, 3);
@@ -4077,10 +4077,10 @@
     }
   });
 
-  // node_modules/culori/src/xyb/definition.js
+  // ../../../node_modules/culori/src/xyb/definition.js
   var definition25, definition_default25;
   var init_definition25 = __esm({
-    "node_modules/culori/src/xyb/definition.js"() {
+    "../../../node_modules/culori/src/xyb/definition.js"() {
       init_linear();
       init_alpha();
       init_convertRgbToXyb();
@@ -4112,10 +4112,10 @@
     }
   });
 
-  // node_modules/culori/src/xyz50/definition.js
+  // ../../../node_modules/culori/src/xyz50/definition.js
   var definition26, definition_default26;
   var init_definition26 = __esm({
-    "node_modules/culori/src/xyz50/definition.js"() {
+    "../../../node_modules/culori/src/xyz50/definition.js"() {
       init_convertXyz50ToRgb();
       init_convertXyz50ToLab();
       init_convertRgbToXyz50();
@@ -4151,10 +4151,10 @@
     }
   });
 
-  // node_modules/culori/src/xyz65/convertXyz65ToXyz50.js
+  // ../../../node_modules/culori/src/xyz65/convertXyz65ToXyz50.js
   var convertXyz65ToXyz50, convertXyz65ToXyz50_default;
   var init_convertXyz65ToXyz50 = __esm({
-    "node_modules/culori/src/xyz65/convertXyz65ToXyz50.js"() {
+    "../../../node_modules/culori/src/xyz65/convertXyz65ToXyz50.js"() {
       convertXyz65ToXyz50 = (xyz652) => {
         let { x, y, z, alpha } = xyz652;
         if (x === void 0) x = 0;
@@ -4175,10 +4175,10 @@
     }
   });
 
-  // node_modules/culori/src/xyz65/convertXyz50ToXyz65.js
+  // ../../../node_modules/culori/src/xyz65/convertXyz50ToXyz65.js
   var convertXyz50ToXyz65, convertXyz50ToXyz65_default;
   var init_convertXyz50ToXyz65 = __esm({
-    "node_modules/culori/src/xyz65/convertXyz50ToXyz65.js"() {
+    "../../../node_modules/culori/src/xyz65/convertXyz50ToXyz65.js"() {
       convertXyz50ToXyz65 = (xyz502) => {
         let { x, y, z, alpha } = xyz502;
         if (x === void 0) x = 0;
@@ -4199,10 +4199,10 @@
     }
   });
 
-  // node_modules/culori/src/xyz65/definition.js
+  // ../../../node_modules/culori/src/xyz65/definition.js
   var definition27, definition_default27;
   var init_definition27 = __esm({
-    "node_modules/culori/src/xyz65/definition.js"() {
+    "../../../node_modules/culori/src/xyz65/definition.js"() {
       init_convertXyz65ToRgb();
       init_convertRgbToXyz65();
       init_convertXyz65ToXyz50();
@@ -4238,10 +4238,10 @@
     }
   });
 
-  // node_modules/culori/src/yiq/convertRgbToYiq.js
+  // ../../../node_modules/culori/src/yiq/convertRgbToYiq.js
   var convertRgbToYiq, convertRgbToYiq_default;
   var init_convertRgbToYiq = __esm({
-    "node_modules/culori/src/yiq/convertRgbToYiq.js"() {
+    "../../../node_modules/culori/src/yiq/convertRgbToYiq.js"() {
       convertRgbToYiq = ({ r, g, b, alpha }) => {
         if (r === void 0) r = 0;
         if (g === void 0) g = 0;
@@ -4259,10 +4259,10 @@
     }
   });
 
-  // node_modules/culori/src/yiq/convertYiqToRgb.js
+  // ../../../node_modules/culori/src/yiq/convertYiqToRgb.js
   var convertYiqToRgb, convertYiqToRgb_default;
   var init_convertYiqToRgb = __esm({
-    "node_modules/culori/src/yiq/convertYiqToRgb.js"() {
+    "../../../node_modules/culori/src/yiq/convertYiqToRgb.js"() {
       convertYiqToRgb = ({ y, i, q, alpha }) => {
         if (y === void 0) y = 0;
         if (i === void 0) i = 0;
@@ -4280,10 +4280,10 @@
     }
   });
 
-  // node_modules/culori/src/yiq/definition.js
+  // ../../../node_modules/culori/src/yiq/definition.js
   var definition28, definition_default28;
   var init_definition28 = __esm({
-    "node_modules/culori/src/yiq/definition.js"() {
+    "../../../node_modules/culori/src/yiq/definition.js"() {
       init_convertRgbToYiq();
       init_convertYiqToRgb();
       init_linear();
@@ -4314,7 +4314,7 @@
     }
   });
 
-  // node_modules/culori/src/clamp.js
+  // ../../../node_modules/culori/src/clamp.js
   function displayable(color) {
     return inrange_rgb(rgb(color));
   }
@@ -4326,7 +4326,7 @@
   }
   var rgb, fixup_rgb, to_displayable_srgb, inrange_rgb;
   var init_clamp = __esm({
-    "node_modules/culori/src/clamp.js"() {
+    "../../../node_modules/culori/src/clamp.js"() {
       init_converter();
       init_prepare();
       rgb = converter_default("rgb");
@@ -4349,10 +4349,10 @@
     }
   });
 
-  // node_modules/culori/src/index.js
+  // ../../../node_modules/culori/src/index.js
   var a98, cubehelix, dlab, dlch, hsi, hsl, hsv, hwb, itp, jab, jch, lab, lab65, lch, lch65, lchuv, lrgb, luv, okhsl, okhsv, oklab, oklch, p3, prophoto, rec2020, rgb2, xyb, xyz50, xyz65, yiq;
   var init_src = __esm({
-    "node_modules/culori/src/index.js"() {
+    "../../../node_modules/culori/src/index.js"() {
       init_definition2();
       init_definition3();
       init_definition4();
@@ -4601,6 +4601,7 @@
       function parseCssVariables(css, existing) {
         var _a, _b, _c, _d, _e;
         const result = {};
+        const warnings = [];
         const modeBlocks = [];
         css = css.replace(
           /\[data-[\w-]+=(?:"([^"]+)"|'([^']+)')\]\s*\{([^]*?)\}/g,
@@ -4835,6 +4836,7 @@
             };
             continue;
           }
+          warnings.push({ name, raw: valueStr, reason: "Unrecognized value" });
         }
         for (const block of modeBlocks) {
           re.lastIndex = 0;
@@ -4842,7 +4844,14 @@
             const name = m[1];
             const valueStr = m[2].trim();
             const val = parseColorPart(valueStr);
-            if (!val.color && !val.alias) continue;
+            if (!val.color && !val.alias) {
+              warnings.push({
+                name,
+                raw: valueStr,
+                reason: `Unrecognized value in [data-...="${block.mode}"] block`
+              });
+              continue;
+            }
             let entry = result[name];
             if (!entry) {
               entry = {
@@ -4855,8 +4864,13 @@
             entry.modes[block.mode] = val;
           }
         }
-        return result;
+        return { vars: result, warnings };
       }
+      var existingVarsPromise = null;
+      var getCachedExistingVars = () => {
+        if (!existingVarsPromise) existingVarsPromise = getAllLocalVariables();
+        return existingVarsPromise;
+      };
       figma.ui.onmessage = async (msg) => {
         var _a;
         if (msg.type === "resize") {
@@ -4864,22 +4878,29 @@
           return;
         }
         if (msg.type === "preview-css") {
-          const existingVars = buildExistingVarMap(await getAllLocalVariables());
-          const vars = parseCssVariables(msg.css, existingVars);
+          const existingVars = buildExistingVarMap(await getCachedExistingVars());
+          const { vars, warnings } = parseCssVariables(msg.css, existingVars);
           const preview = Object.entries(vars).map(([name, data]) => ({
             name,
             type: data.type,
             value: data.value,
             description: data.description,
-            scopes: filterScopesForType(detectVariableScopes(name), data.type)
+            scopes: filterScopesForType(detectVariableScopes(name), data.type),
+            modes: data.modes ? Object.fromEntries(
+              Object.entries(data.modes).map(([mName, mVal]) => [
+                mName,
+                { color: mVal.color, alias: mVal.alias }
+              ])
+            ) : void 0
           }));
-          figma.ui.postMessage({ type: "preview-data", preview });
+          figma.ui.postMessage({ type: "preview-data", preview, warnings });
           return;
         }
         if (msg.type === "import-css") {
+          existingVarsPromise = null;
           const allVars = await getAllLocalVariables();
           const existingVars = buildExistingVarMap(allVars);
-          const vars = parseCssVariables(msg.css, existingVars);
+          const { vars } = parseCssVariables(msg.css, existingVars);
           const collectionName = msg.collectionName;
           const itemScopes = msg.itemScopes;
           const groupScopes = msg.groupScopes;

@@ -8,6 +8,8 @@ type ParsedVar = {
   modes?: Record<string, ParsedModeValue>;
   description?: string;
 };
+type ParseWarning = { name: string; raw: string; reason: string };
+type ParseResult = { vars: Record<string, ParsedVar>; warnings: ParseWarning[] };
 
 const VARIABLE_SCOPES: VariableScope[] = [
   'TEXT_CONTENT',
@@ -212,8 +214,9 @@ function buildExistingVarMap(vars: Variable[]): Record<string, ParsedVar> {
 function parseCssVariables(
   css: string,
   existing?: Record<string, ParsedVar>
-): Record<string, ParsedVar> {
+): ParseResult {
   const result: Record<string, ParsedVar> = {};
+  const warnings: ParseWarning[] = [];
   const modeBlocks: { mode: string; content: string }[] = [];
   css = css.replace(
     /\[data-[\w-]+=(?:"([^"]+)"|'([^']+)')\]\s*\{([^]*?)\}/g,
@@ -461,6 +464,8 @@ function parseCssVariables(
       };
       continue;
     }
+
+    warnings.push({ name, raw: valueStr, reason: 'Unrecognized value' });
   }
 
   for (const block of modeBlocks) {
@@ -469,7 +474,14 @@ function parseCssVariables(
       const name = m[1];
       const valueStr = m[2].trim();
       const val = parseColorPart(valueStr);
-      if (!val.color && !val.alias) continue;
+      if (!val.color && !val.alias) {
+        warnings.push({
+          name,
+          raw: valueStr,
+          reason: `Unrecognized value in [data-...="${block.mode}"] block`
+        });
+        continue;
+      }
       let entry = result[name];
       if (!entry) {
         entry = {
@@ -482,8 +494,14 @@ function parseCssVariables(
       entry.modes[block.mode] = val;
     }
   }
-  return result;
+  return { vars: result, warnings };
 }
+
+let existingVarsPromise: Promise<Variable[]> | null = null;
+const getCachedExistingVars = (): Promise<Variable[]> => {
+  if (!existingVarsPromise) existingVarsPromise = getAllLocalVariables();
+  return existingVarsPromise;
+};
 
 figma.ui.onmessage = async (msg) => {
   if (msg.type === 'resize') {
@@ -491,22 +509,31 @@ figma.ui.onmessage = async (msg) => {
     return;
   }
   if (msg.type === 'preview-css') {
-    const existingVars = buildExistingVarMap(await getAllLocalVariables());
-    const vars = parseCssVariables(msg.css as string, existingVars);
+    const existingVars = buildExistingVarMap(await getCachedExistingVars());
+    const { vars, warnings } = parseCssVariables(msg.css as string, existingVars);
     const preview = Object.entries(vars).map(([name, data]) => ({
       name,
       type: data.type,
       value: data.value,
       description: data.description,
-      scopes: filterScopesForType(detectVariableScopes(name), data.type)
+      scopes: filterScopesForType(detectVariableScopes(name), data.type),
+      modes: data.modes
+        ? Object.fromEntries(
+            Object.entries(data.modes).map(([mName, mVal]) => [
+              mName,
+              { color: mVal.color, alias: mVal.alias }
+            ])
+          )
+        : undefined
     }));
-    figma.ui.postMessage({ type: 'preview-data', preview });
+    figma.ui.postMessage({ type: 'preview-data', preview, warnings });
     return;
   }
   if (msg.type === 'import-css') {
+    existingVarsPromise = null;
     const allVars = await getAllLocalVariables();
     const existingVars = buildExistingVarMap(allVars);
-    const vars = parseCssVariables(msg.css as string, existingVars);
+    const { vars } = parseCssVariables(msg.css as string, existingVars);
     const collectionName = msg.collectionName as string;
     const itemScopes = msg.itemScopes as Record<string, VariableScope[] | undefined> | undefined;
     const groupScopes = msg.groupScopes as Record<string, VariableScope[] | undefined> | undefined;
